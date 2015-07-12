@@ -4,7 +4,7 @@
   "description": "LiveStyle desktop app with Remote View",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/mocha --reporter spec"
   },
   "repository": {
     "type": "git",
@@ -17,8 +17,12 @@
   },
   "homepage": "https://github.com/livestyle/app",
   "dependencies": {
-    "livestyle-client": "livestyle/client",
-    "livestyle-server": "livestyle/server",
-    "remote-view-client": "livestyle/remote-view-client"
+    "debug": "^2.2.0",
+    "remote-view-client": "livestyle/remote-view-client",
+    "ws": "^0.7.2",
+    "xtend": "^4.0.0"
+  },
+  "devDependencies": {
+    "mocha": "^2.2.5"
   }
 }
