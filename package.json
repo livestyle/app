@@ -1,0 +1,24 @@
+{
+  "name": "livestyle-app",
+  "version": "1.0.0",
+  "description": "LiveStyle desktop app with Remote View",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/livestyle/app.git"
+  },
+  "author": "Sergey Chikuyonok <serge.che@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/livestyle/app/issues"
+  },
+  "homepage": "https://github.com/livestyle/app",
+  "dependencies": {
+    "livestyle-client": "livestyle/client",
+    "livestyle-server": "livestyle/server",
+    "remote-view-client": "livestyle/remote-view-client"
+  }
+}

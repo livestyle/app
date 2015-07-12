@@ -1,0 +1,280 @@
+@font-face {
+	font-family: 'Lato';
+	src: url('./lato-regular.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+  font-family: 'Flat-UI-Icons';
+  src: url('./flat-ui-icons-regular.woff') format('woff');
+}
+
+html, body {
+	padding: 0;
+	margin: 0;
+	width: 100%;
+	height: 100%;
+}
+
+body {
+	display: flex;
+	font-family: Lato, 'Helvetica Neue', arial, sans-serif;
+	font-size: 14px;
+	color: #7c8d8e;
+	line-height: 1.7;
+}
+
+h1, h2 {
+	font-size: 2em;
+	line-height: 1.2;
+	margin-top: 0;
+	font-weight: normal;
+	color: #30485f;
+}
+
+h1 {
+	text-align: center;
+}
+
+a {
+	color: #2980B9;
+	transition: color .25s linear;
+}
+
+a:hover {
+	color: #3498DB;
+}
+
+p {
+	margin-top: 0;
+}
+
+i {
+	font-family: Flat-UI-Icons;
+	font-style: normal;
+}
+
+button {
+	padding: 10px 19px;
+	line-height: 1.4;
+	font-size: 1.1em;
+	color: #fff;
+	cursor: pointer;
+	background-color: #1abc9c;
+	border: none;
+	border-radius: 6px;
+	transition: background-color .25s linear;
+}
+
+button:hover {
+	background-color: #48c9b0;
+}
+
+.main-pane,
+.rv-pane {
+	padding: 30px;
+	box-sizing: border-box;
+	height: 100%;
+	position: relative;
+	overflow: auto;
+}
+
+.extension {
+	display: flex;
+	justify-content: space-between;
+	margin: 40px -30px;
+	padding: 0;
+	list-style-type: none;
+}
+
+.extension-item {
+	display: block;
+	width: 235px;
+	text-align: center;
+	margin: 0 30px;
+	flex-grow: 1;
+}
+
+.extension-icon {
+	display: inline-block;
+	width: 160px;
+	height: 160px;
+	margin-bottom: 13px;
+	position: relative;
+	font-style: normal;
+}
+
+.extension-icon::before {
+	display: inline-block;
+	content: '';
+	width: 100%;
+	height: 100%;
+	background-size: contain;
+	background-repeat: no-repeat;
+}
+
+.extension-icon::after {
+	display: inline-block;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	font-family: Flat-UI-Icons;
+	font-size: 30px;
+}
+
+.extension-message {
+	padding: 10px 0;
+	line-height: 1.4;
+	font-size: 1.1em;
+	color: #829793;
+	display: none;
+}
+
+[data-extension-id=chrome] .extension-icon::before {
+	background-image: url(./chrome.png);
+}
+
+[data-extension-id=st] .extension-icon::before {
+	background-image: url(./sublime-text.png);
+}
+
+/* Extension states */
+[data-extension-state=installed] .extension-icon::before,
+[data-extension-state=error] .extension-icon::before {
+	opacity: 0.2;
+}
+
+[data-extension-state=installed] .extension-icon::after {
+	content: '\e612';
+	color: #00b763;
+}
+
+[data-extension-state=error] .extension-icon::after {
+	content: '\e613';
+	color: #e74c3c;
+}
+
+[data-extension-state=installed] .extension-install-btn,
+[data-extension-state=error] .extension-install-btn {
+	display: none;
+}
+
+[data-extension-state=installed] .extension-message,
+[data-extension-state=error] .extension-message {
+	display: block;
+}
+
+.quick-tour {
+	font-size: 1.8em;
+	position: absolute;
+	bottom: 30px;
+	left: 0;
+	width: 100%;
+	text-align: center;
+	line-height: 1;
+	margin: 0;
+}
+
+.action-btn {
+	display: inline-block;
+	padding: 7px 11px;
+	font-size: 13px;
+	line-height: 1.4;
+	border: none;
+	border-radius: 4px;
+	background-color: #e74c3c;
+	transition: border .25s linear,color .25s linear,background-color .25s linear;
+}
+
+.action-btn:hover {
+	background-color: #ec7063;
+}
+
+/*******************************
+ Remote View pane 
+ *******************************/
+
+.rv-pane {
+	width: 360px;
+	background: #eff0f2;
+	flex-shrink: 0;
+	background: #30485f;
+}
+
+.rv-pane__disabled {
+	background-color: #eff0f2;
+}
+
+.rv-pane h2 {
+	color: inherit;
+}
+
+.rv-description {
+	display: none;
+}
+
+.rv-pane__disabled .rv-description {
+	display: block;
+}
+
+.rv-pane__disabled .rv-session {
+	display: none;
+}
+
+.rv-session {
+	display: block;
+	list-style-type: none;
+	margin: 0 -30px;
+	padding: 0;
+}
+
+.rv-session-item {
+	padding: 11px 30px;
+	border-top: 2px solid #283c51;
+	position: relative;
+}
+
+.rv-session-item:first-child {
+	border-top: 0;
+}
+
+.rv-session-item a {
+	text-decoration: none;
+	color: inherit;
+}
+
+.rv-session-item a:hover {
+	text-decoration: underline;
+}
+
+.rv-session-public-id {
+	font-size: 1em;
+	font-weight: bold;
+	color: #fff;
+}
+
+.rv-session-local {
+	color: #798795;
+	font-size: 0.9em;
+}
+
+.rv-session-remove {
+	position: absolute;
+	right: 20px;
+	top: 0.9em;
+	color: #fc2d1e;
+	font-size: 1.3em;
+	cursor: pointer;
+	opacity: 0;
+	transition: opacity 0.25s linear;
+	-webkit-font-smoothing: antialiased;
+}
+
+.rv-session-remove::before {
+	content: '\e609';
+}
+
+.rv-session-item:hover .rv-session-remove {
+	opacity: 1;
+}

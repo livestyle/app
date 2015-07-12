@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>LiveStyle</title>
+	<link rel="stylesheet" href="./assets/main.css" />
+</head>
+<body>
+	<section class="main-pane">
+		<h1>LiveStyle plugins</h1>
+		<p>To provide the best live editing experience, LiveStyle integrates directly into your browser and editor. Currently, LiveStyle is available for <a href="http://www.google.com/chrome/">Google Chrome</a> browser and <a href="http://www.sublimetext.com/3">Sublime Text 3</a> editor.</p>
+		<ul class="extension">
+			<li class="extension-item" data-extension-id="chrome" data-extension-state="">
+				<i class="extension-icon extension-icon__chrome"></i>
+				<button class="extension-install-btn">Install Chrome extension</button>
+				<div class="extension-message">Installed</div>
+			</li>
+			<li class="extension-item" data-extension-state="" data-extension-id="st">
+				<i class="extension-icon"></i>
+				<button class="extension-install-btn">Install Sublime Text plugin</button>
+				<div class="extension-message">
+					<p>Unable to find Sublime Text installation folder</p>
+					<button class="action-btn">Pick folder</button>
+				</div>
+			</li>
+		</ul>
+		<!-- <p class="quick-tour"><a href="/">Quick tour</a></p> -->
+	</section>
+	<section class="rv-pane">
+		<h2>Remote View sessions</h2>
+		<div class="rv-description">
+			<p>Remote View is the  easiest and fastest way to preview and live edit your local web-site on any internet-connected browser or device.</p>
+			<p>To start a Remote View session, go to your local web-site in Google Chrome browser, open LiveStyle popup and click on “Enable Remote View” button.</p>
+			<p><a href="/">How it works</a></p>
+		</div>
+		<ul class="rv-session">
+			<li class="rv-session-item">
+				<div class="rv-session-public-id">
+					<a href="http://super-awesome.livestyle.io">http://super-awesome.livestyle.io</a>
+				</div>
+				<div class="rv-session-local">
+					<a href="http://localhost:8888">http://localhost:8888</a>
+				</div>
+				<i class="rv-session-remove"></i>
+			</li>
+			<li class="rv-session-item">
+				<div class="rv-session-public-id">
+					<a href="http://another-project.livestyle.io">http://another-project.livestyle.io</a>
+				</div>
+				<div class="rv-session-local">
+					<a href="http://localhost:8000">http://localhost:8000</a>
+				</div>
+				<i class="rv-session-remove"></i>
+			</li>
+		</ul>
+	</section>
+</body>
+</html>
