@@ -24,5 +24,8 @@
   },
   "devDependencies": {
     "mocha": "^2.2.5"
+  },
+  "config": {
+    "websocketUrl": "ws://127.0.0.1:54000/livestyle"
   }
 }

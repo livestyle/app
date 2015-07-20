@@ -5,8 +5,9 @@ var ipc = require('ipc');
 var BrowserWindow = require('browser-window');
 var debug = require('debug')('lsapp:main');
 var lsClient = require('./lib/client');
-var tunnelController = require('./lib/tunnel')();
+var tunnelController = require('./lib/tunnel-controller');
 var connect = require('./lib/client');
+var pkg = require('./package.json');
 
 var ls = null;
 var rv = [];
@@ -44,7 +45,7 @@ app.on('ready', function() {
 	tunnelController.on('update', sendRvSessionList);
 });
 
-connect('ws://127.0.0.1:54000/livestyle', function(err, client) {
+connect(pkg.config.websocketUrl, function(err, client) {
 	if (err) {
 		ipc.send('error', err.message, 'ls-connect');
 		debug('ls error: %s', err);
