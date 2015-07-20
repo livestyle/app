@@ -1,7 +1,7 @@
 'use strict';
 
 var assert = require('assert');
-var tunnelController = require('../lib/tunnel');
+var tc = require('../lib/tunnel-controller');
 
 // No need to check full Remote View connectivity,
 // simply check that controller is properly instantiated and emits messages
@@ -11,7 +11,7 @@ describe('Tunnel Cluster controller', function() {
 		var clusterCreated = false;
 		var updates = [];
 
-		var tc = tunnelController()
+		tc
 		.on('update', function(list) {
 			updates.push(list);
 		})
