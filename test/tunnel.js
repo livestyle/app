@@ -34,7 +34,7 @@ describe('Tunnel Cluster controller', function() {
 		tc.create({
 			publicId: 'rv-test.livestyle.io',
 			localSite: 'http://localhost:8901',
-			url: 'http://localhost:8902/fake-session',
+			connectUrl: 'http://localhost:8902/fake-session',
 			maxConnections: 2,
 			retryCount: 2,
 			retryDelay: 100,
