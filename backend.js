@@ -32,9 +32,10 @@ module.exports = function(client) {
 		};
 		var onDestroy = function(err) {
 			debug('unable to create session for %s: %s', data.localSite, err ? err.message : 'unknown');
+			var message = err ? err.message : 'Unable to establish tunnel with Remote View server'
 			client.send('rv-session', {
 				localSite: data.localSite,
-				error: err ? err.message : 'Unable to create session'
+				error: message + '. Please try again later.'
 			});
 			this.removeListener('connect', onConnect);
 		};
@@ -44,9 +45,11 @@ module.exports = function(client) {
 		.once('destroy', onDestroy);
 	})
 	.on('rv-close-session', function(data) {
-		var session = findSession(data);
+		debug('close session %o', data);
+		var session = findSession(data.localSite);
 		if (session) {
-			tunnelController.close(session.sessionId);
+			debug('closing %s', session.publicId);
+			tunnelController.close(session.publicId);
 		}
 	});
 
