@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/livestyle/app",
   "dependencies": {
+    "browser-launcher2": "^0.4.5",
     "debug": "^2.2.0",
+    "graceful-fs": "^4.1.2",
     "remote-view-client": "livestyle/remote-view-client",
     "ws": "^0.7.2",
     "xtend": "^4.0.0"

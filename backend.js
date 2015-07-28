@@ -7,7 +7,6 @@
 
 var debug = require('debug')('lsapp:backend');
 var tunnelController = require('./lib/tunnel-controller');
-var pkg = require('./package.json');
 
 module.exports = function(client) {
 	client
@@ -74,6 +73,7 @@ function sessionPayload(localSite) {
 }
 
 if (require.main === module) {
+	let pkg = require('./package.json');
 	require('./lib/client')(pkg.config.websocketUrl, function(err, client) {
 		if (err) {
 			return console.error(err);
