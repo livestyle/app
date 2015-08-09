@@ -21,6 +21,7 @@
     "debug": "^2.2.0",
     "graceful-fs": "^4.1.2",
     "remote-view-client": "livestyle/remote-view-client",
+    "win-detect-browsers": "^2.1.0",
     "ws": "^0.7.2",
     "xtend": "^4.0.0"
   },
