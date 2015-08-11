@@ -1,0 +1,61 @@
+{
+	"st3": {
+		"title": "Sublime Text 3",
+		"install": {
+			"win32":  "~\\AppData\\Roaming\\Sublime Text 3\\Packages",
+			"darwin": "~/Library/Application Support/Sublime Text 3/Packages"
+		},
+		"lookup": {
+			"win32": [
+				"%PROGRAMFILES%\\Sublime Text 3\\sublime.exe",
+				"~\\AppData\\Roaming\\Sublime Text 3"
+			],
+			"darwin": [
+				"~/Library/Application Support/Sublime Text 3",
+				"/Applications/Sublime Text.app/Contents/MacOS/plugin_host",
+				"/Applications/Sublime Text 3.app/Contents/MacOS/plugin_host"
+			]
+		},
+		"extensionId": ["LiveStyle", "LiveStyle.sublime-package"]
+	},
+	"st2": {
+		"title": "Sublime Text 2",
+		"install": {
+			"win32":  "~\\AppData\\Roaming\\Sublime Text 2\\Packages",
+			"darwin": "~/Library/Application Support/Sublime Text 2/Packages"
+		},
+		"lookup": {
+			"win32": [
+				"%PROGRAMFILES%\\Sublime Text 2\\sublime.exe",
+				"~\\AppData\\Roaming\\Sublime Text 2"
+			],
+			"darwin": [
+				"~/Library/Application Support/Sublime Text 2",
+				"/Applications/Sublime Text 2.app/Contents/MacOS/Sublime Text 2",
+				"/Applications/Sublime Text.app/Contents/MacOS/Sublime Text 2"
+			]
+		},
+		"extensionId": ["LiveStyle"]
+	},
+	"chrome": {
+		"title": "Google Chrome",
+		"lookup": {
+			"win32": [
+				"~\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions",
+				"~\\AppData\\Local\\Chromium\\User Data\\Default\\Extensions"
+			],
+			"darwin": [
+				"~/Library/Application Support/Google/Chrome/Default/Extensions",
+				"~/Library/Application Support/Chromium/Default/Extensions"
+			],
+			"linux": [
+				"~/.config/google-chrome/Default/Extensions",
+				"~/.config/chromium/Default/Extensions"
+			]
+		},
+		"extensionId": [
+			"obipchajaiohjoohongibhgbfgchblei", 
+			"diebikgmpmeppiilkaijjbdgciafajmg"
+		]
+	}
+}

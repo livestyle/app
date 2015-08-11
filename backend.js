@@ -6,7 +6,8 @@
 'use strict';
 
 var debug = require('debug')('lsapp:backend');
-var tunnelController = require('./lib/tunnel-controller');
+var tunnelController = require('./lib/controller/tunnel');
+var appModelController = require('./lib/controller/app-model');
 
 module.exports = function(client) {
 	client
@@ -52,8 +53,9 @@ module.exports = function(client) {
 		}
 	});
 
-	tunnelController.on('update', function(list) {
-		client.send('rv-session-list', list);
+	appModelController(client).on('change', function() {
+		debug('model update', this.attributes);
+		client.send('app-model', this.toJSON());
 	});
 };
 
