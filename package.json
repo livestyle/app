@@ -20,6 +20,7 @@
     "browser-launcher2": "^0.4.5",
     "debug": "^2.2.0",
     "graceful-fs": "^4.1.2",
+    "mkdirp": "^0.5.1",
     "remote-view-client": "livestyle/remote-view-client",
     "temp": "^0.8.3",
     "unzip": "^0.1.11",
