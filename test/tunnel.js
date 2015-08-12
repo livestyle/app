@@ -1,7 +1,7 @@
 'use strict';
 
 var assert = require('assert');
-var tc = require('../lib/tunnel-controller');
+var tc = require('../lib/controller/tunnel');
 
 // No need to check full Remote View connectivity,
 // simply check that controller is properly instantiated and emits messages
