@@ -53,7 +53,7 @@ module.exports = function(client) {
 		}
 	});
 
-	appModelController(client).on('change', function() {
+	return appModelController(client).on('change', function() {
 		debug('model update', this.attributes);
 		client.send('app-model', this.toJSON());
 	});

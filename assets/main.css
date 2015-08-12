@@ -97,10 +97,10 @@ button:hover {
 }
 
 .extension-icon {
-	display: inline-block;
+	display: block;
 	width: 160px;
 	height: 160px;
-	margin-bottom: 13px;
+	margin: 0 auto 13px;
 	position: relative;
 	font-style: normal;
 }
@@ -131,6 +131,11 @@ button:hover {
 	display: none;
 }
 
+.extension-progress {
+	margin-top: 10px;
+	display: none;
+}
+
 [data-extension-id=chrome] .extension-icon::before {
 	background-image: url(./chrome.png);
 }
@@ -145,7 +150,8 @@ button:hover {
 	opacity: 0.2;
 }
 
-[data-extension-state=installed] .extension-icon::after {
+[data-extension-state=installed] .extension-icon::after,
+[data-extension-state=partially-installed] .extension-icon::after {
 	content: '\e612';
 	color: #00b763;
 }
@@ -156,12 +162,17 @@ button:hover {
 }
 
 [data-extension-state=installed] .extension-install-btn,
-[data-extension-state=error] .extension-install-btn {
+[data-extension-state=installing] .extension-install-btn,
+[data-extension-state=progress] .extension-install-btn {
 	display: none;
 }
 
 [data-extension-state=installed] .extension-message,
 [data-extension-state=error] .extension-message {
+	display: block;
+}
+
+[data-extension-state=progress] .extension-progress {
 	display: block;
 }
 
@@ -277,4 +288,40 @@ button:hover {
 
 .rv-session-item:hover .rv-session-remove {
 	opacity: 1;
+}
+
+/* Spinner */
+.spinner {
+	display: inline-block;
+	margin-left: 5px;
+}
+
+.spinner__item {
+	display: inline-block;
+	width: 4px;
+	height: 4px;
+	background: #7c8d8e;
+	border-radius: 2px;
+	vertical-align: middle;
+	animation: spinner 0.7s infinite;
+}
+
+.spinner__item:nth-of-type(2) {
+	animation-delay: 0.1s;
+}
+
+.spinner__item:nth-of-type(3) {
+	animation-delay: 0.2s;
+}
+
+@keyframes spinner {
+	from {
+		transform: scale(0);
+		opacity: 1;
+	}
+
+	to {
+		transform: scale(2);
+		opacity: 0;
+	}
 }

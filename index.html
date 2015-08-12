@@ -10,17 +10,33 @@
 		<h1>LiveStyle plugins</h1>
 		<p>To provide the best live editing experience, LiveStyle integrates directly into your browser and editor. Currently, LiveStyle is available for <a href="http://www.google.com/chrome/">Google Chrome</a> browser and <a href="http://www.sublimetext.com/3">Sublime Text 3</a> editor.</p>
 		<ul class="extension">
-			<li class="extension-item" data-extension-id="chrome" data-extension-state="">
+			<li class="extension-item" data-extension-id="chrome" data-extension-state="progress">
 				<i class="extension-icon extension-icon__chrome"></i>
 				<button class="extension-install-btn">Install Chrome extension</button>
+				<div class="extension-progress">
+					<span class="extension-progress__message">Installing</span>
+					<span class="spinner">
+						<i class="spinner__item"></i>
+						<i class="spinner__item"></i>
+						<i class="spinner__item"></i>
+					</span>
+				</div>
 				<div class="extension-message">Installed</div>
 			</li>
 			<li class="extension-item" data-extension-state="" data-extension-id="st">
 				<i class="extension-icon"></i>
-				<button class="extension-install-btn">Install Sublime Text plugin</button>
+				<button class="extension-install-btn">Install Sublime Text <span class="version"></span> plugin</button>
+				<div class="extension-progress">
+					<span class="extension-progress__message">Installing</span>
+					<span class="spinner">
+						<i class="spinner__item"></i>
+						<i class="spinner__item"></i>
+						<i class="spinner__item"></i>
+					</span>
+				</div>
 				<div class="extension-message">
 					<p>Unable to find Sublime Text installation folder</p>
-					<button class="action-btn">Pick folder</button>
+					<button class="action-btn" data-action="pick-folder">Pick folder</button>
 				</div>
 			</li>
 		</ul>
@@ -29,7 +45,7 @@
 	<section class="rv-pane rv-pane__disabled">
 		<h2>Remote View sessions</h2>
 		<div class="rv-description">
-			<p>Remote View is the  easiest and fastest way to preview and live edit your local web-site on any internet-connected browser or device.</p>
+			<p>Remote View is the easiest and fastest way to preview and live edit your local web-site on any internet-connected browser or device.</p>
 			<p>To start a Remote View session, go to your local web-site in Google Chrome browser, open LiveStyle popup and click on “Enable Remote View” button.</p>
 			<p><a href="/">How it works</a></p>
 		</div>
@@ -55,7 +71,7 @@
 		</ul>
 	</section>
 	<script>
-	require('./ui/rv-sessions');
+	require('./ui/controller');
 	</script>
 </body>
 </html>
