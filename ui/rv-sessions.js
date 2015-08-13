@@ -18,7 +18,7 @@ module.exports = function(elem) {
 		}
 	});
 
-	function render(sessionList) {
+	return function render(sessionList) {
 		sessionList = sessionList || [];
 		console.log('update with list', sessionList);
 

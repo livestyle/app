@@ -14,7 +14,7 @@ var closest = require('./utils').closest;
 
 function init() {
 	var chromeRender = chrome($('.extension-item[data-extension-id=chrome]'));
-	var stRender = rv($('.extension-item[data-extension-id=st]'));
+	var stRender = st($('.extension-item[data-extension-id=st]'));
 	var rvRender = rv($('.rv-pane'));
 
 	ipc.on('model', function(model) {
