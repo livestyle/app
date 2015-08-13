@@ -4,6 +4,8 @@
 'use strict';
 
 var ipc = require('ipc');
+var $ = require('./utils').qs;
+var closest = require('./utils').closest;
 
 module.exports = function(elem) {
 	elem.addEventListener('click', function(evt) {
@@ -34,17 +36,3 @@ module.exports = function(elem) {
 		}).join('\n');
 	}
 };
-
-function $(sel, context) {
-	return (context || document).querySelector(sel);
-}
-
-function closest(elem, sel) {
-	while (elem && elem !== document) {
-		if (elem.matches(sel)) {
-			return elem;
-		}
-
-		elem = elem.parentNode;
-	}
-}

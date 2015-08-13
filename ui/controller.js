@@ -4,9 +4,13 @@
 'use strict';
 
 var ipc = require('ipc');
+var shell = require('shell');
 var chrome = require('./chrome');
 var st = require('./sublime-text');
 var rv = require('./rv-sessions');
+var $ = require('./utils').qs;
+var closest = require('./utils').closest;
+
 
 function init() {
 	var chromeRender = chrome($('.extension-item[data-extension-id=chrome]'));
@@ -18,10 +22,16 @@ function init() {
 		stRender(model.sublimeTextPlugin);
 		rvRender(model.rvSessions);
 	});
-}
 
-function $(sel, context) {
-	return (context || document).querySelector(sel);
+	// open all URLs in default system browser
+	document.addEventListener('click', function(evt) {
+		var a = closest(evt.target, 'a');
+		if (a) {
+			evt.preventDefault();
+			evt.stopPropagation();
+			shell.openExternal(a.href);
+		}
+	});
 }
 
 init();

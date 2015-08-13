@@ -5,6 +5,7 @@
 'use strict';
 
 var ipc = require('ipc');
+var $ = require('./utils').qs;
 
 module.exports = function(elem) {
 	$('.extension-install-btn', elem).addEventListener('click', function() {
@@ -38,10 +39,6 @@ module.exports = function(elem) {
 		}
 	};
 };
-
-function $(sel, context) {
-	return (context || document).querySelector(sel);
-}
 
 function isError(attr) {
 	return typeof attr === 'object' && 'error' in attr;
