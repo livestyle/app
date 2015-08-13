@@ -10,6 +10,8 @@ var $ = require('./utils').qs;
 module.exports = function(elem) {
 	$('.extension-install-btn', elem).addEventListener('click', function() {
 		ipc.send('install-sublime-text', this.dataset.installVersion);
+		$('.extension-progress__message', elem).innerText = 'Installing';
+		elem.dataset.extensionState = 'progress';
 	});
 
 	return function render(attr) {
@@ -17,12 +19,7 @@ module.exports = function(elem) {
 			// unknown state: currently checking if plugin is installed
 			$('.extension-progress__message', elem).innerText = 'Checking status';
 			elem.dataset.extensionState = 'progress';
-			return;
-		}
-
-		if (attr === false) {
-			// extension is not installed
-			elem.dataset.extensionState = '';
+			$('.extension-message', elem).innerText = '';
 			return;
 		}
 
@@ -36,15 +33,27 @@ module.exports = function(elem) {
 			// e.g. have multiple ST versions, but installed in one of them
 			var status = installStatus(attr);
 			var btn = $('.extension-install-btn', elem);
-			if (status.missing.length) {
+			if (!status.installed.length) {
+				// no installed plugin, pass further
+				attr = false;
+			} else if (status.missing.length) {
 				elem.dataset.extensionState = 'partially-installed';
 				btn.dataset.installVersion = status.missing.join(',');
 				$('.version', btn).innerText = status.missing[0].replace(/^[a-z]+/, '');
+				$('.extension-message', elem).innerText = '';
 			} else {
 				elem.dataset.extensionState = 'installed';
 				btn.dataset.installVersion = '';
+				$('.extension-message', elem).innerText = 'Installed';
 				$('.version', btn).innerText = '';
 			}
+		}
+
+		if (attr === false) {
+			// extension is not installed
+			elem.dataset.extensionState = '';
+			$('.extension-message', elem).innerText = '';
+			return;
 		}
 	};
 };

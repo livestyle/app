@@ -16,6 +16,7 @@ module.exports = function(elem) {
 		if (attr == null) {
 			// unknown state: currently checking if plugin is installed
 			$('.extension-progress__message', elem).innerText = 'Checking status';
+			$('.extension-message', elem).innerText = '';
 			elem.dataset.extensionState = 'progress';
 			return;
 		}
@@ -23,6 +24,7 @@ module.exports = function(elem) {
 		if (attr === false) {
 			// extension is not installed
 			elem.dataset.extensionState = '';
+			$('.extension-message', elem).innerText = '';
 			return;
 		}
 
@@ -36,6 +38,7 @@ module.exports = function(elem) {
 		if (attr) {
 			// extension is installed
 			elem.dataset.extensionState = 'installed';
+			$('.extension-message', elem).innerText = 'Installed';
 		}
 	};
 };

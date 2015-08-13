@@ -21,6 +21,18 @@ function init() {
 		chromeRender(model.chromePlugin);
 		stRender(model.sublimeTextPlugin);
 		rvRender(model.rvSessions);
+	})
+	.on('log', function(args) {
+		console.log.apply(console, args);
+	})
+	.on('info', function(args) {
+		console.info.apply(console, args);
+	})
+	.on('warn', function(args) {
+		console.warn.apply(console, args);
+	})
+	.on('error', function(args) {
+		console.error.apply(console, args);
 	});
 
 	// open all URLs in default system browser
