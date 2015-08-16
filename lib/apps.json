@@ -39,7 +39,7 @@
 	},
 	"chrome": {
 		"title": "Google Chrome",
-		"install": "https://chrome.google.com/webstore/detail/emmet-livestyle/diebikgmpmeppiilkaijjbdgciafajmg",
+		"install": "https://chrome.google.com/webstore/detail/livestyle-alpha/obipchajaiohjoohongibhgbfgchblei",
 		"lookup": {
 			"win32": [
 				"~\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions",

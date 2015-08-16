@@ -2,6 +2,9 @@
  * A Node.JS back-end for Remote View feature of LiveStyle app: 
  * manages connections to LiveStyle and Remote View servers and
  * responds to RV messages.
+ *
+ * Designed to use in pure Node.JS environment for testing and
+ * debugging (e.g. do not use any Electron-specific packages)
  */
 'use strict';
 
