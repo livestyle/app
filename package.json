@@ -4,7 +4,8 @@
   "description": "LiveStyle desktop app with Remote View",
   "main": "main.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha --reporter spec"
+    "test": "./node_modules/.bin/mocha --reporter spec",
+    "zip": "node pack.js"
   },
   "repository": {
     "type": "git",
@@ -29,7 +30,9 @@
   },
   "devDependencies": {
     "charm": "^1.0.0",
-    "mocha": "^2.2.5"
+    "glob": "^5.0.14",
+    "mocha": "^2.2.5",
+    "yazl": "^2.2.2"
   },
   "config": {
     "websocketUrl": "ws://127.0.0.1:54000/livestyle"
