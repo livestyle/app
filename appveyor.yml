@@ -13,5 +13,8 @@ install:
 test_script:
   - npm run zip
 
+artifacts:
+  - path: ls-app.zip
+
 # Don't actually build.
 build: off
