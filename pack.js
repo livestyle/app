@@ -15,17 +15,12 @@ var ignore = [
 	'*.zip',
 	'*.md'
 ];
-var reIgnore = new RegExp('^node_modules[\\/\\\\](?:' + Object.keys(pkg.devDependencies).join('|') + ')[\\/\\\\]');
 
 glob('**', {ignore, nodir: true}, function(err, files) {
 	if (err) {
 		console.error(err);
 		process.exit(1);
 	}
-
-	files = files.filter(function(file) {
-		return !reIgnore.test(file);
-	});
 
 	console.log('Files to pack: ', files.length);
 
