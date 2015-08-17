@@ -29,7 +29,7 @@ glob('**', {ignore, nodir: true}, function(err, files) {
 	var cwd = process.cwd();
 	var archive = new yazl.ZipFile();
 	files.forEach(function(file) {
-		archive.addFile(file, path.relative(cwd, file));
+		archive.addFile(file, path.relative(cwd, file).replace(/\\/g, '/'));
 	});
 
 	archive.outputStream
