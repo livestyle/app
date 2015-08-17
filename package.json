@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "charm": "^1.0.0",
-    "glob": "^5.0.14",
+    "glob-all": "^3.0.1",
     "mocha": "^2.2.5",
     "yazl": "^2.2.2"
   },

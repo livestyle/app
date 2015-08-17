@@ -5,18 +5,19 @@
 var fs = require('fs');
 var path = require('path');
 var yazl = require('yazl');
-var glob = require('glob');
+var glob = require('glob-all');
 var pkg = require('./package.json');
 
 const dest = 'ls-app.zip';
-var ignore = [
-	'.*', 
-	'appveyor.yml', 
-	'*.zip',
-	'*.md'
+var files = [
+	'{assets,lib,ui}/**',
+	'{main,backend}.js',
+	'index.html',
+	'package.json',
+	'node_modules/{' + Object.keys(pkg.dependencies) + '}/**'
 ];
 
-glob('**', {ignore, nodir: true}, function(err, files) {
+glob(files, {nodir: true}, function(err, files) {
 	if (err) {
 		console.error(err);
 		process.exit(1);
