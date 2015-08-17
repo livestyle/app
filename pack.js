@@ -10,13 +10,12 @@ var pkg = require('./package.json');
 
 const dest = 'ls-app.zip';
 var ignore = [
-	`node_modules/{${Object.keys(pkg.devDependencies).join(',')}}/**`, 
 	'.*', 
 	'appveyor.yml', 
 	'*.zip',
-	'pack.js',
 	'*.md'
 ];
+var reIgnore = new RegExp('^node_modules[\\/\\\\](?:' + Object.keys(pkg.devDependencies).join('|') + ')[\\/\\\\]');
 
 glob('**', {ignore, nodir: true}, function(err, files) {
 	if (err) {
@@ -24,12 +23,16 @@ glob('**', {ignore, nodir: true}, function(err, files) {
 		process.exit(1);
 	}
 
+	files = files.filter(function(file) {
+		return !reIgnore.test(file);
+	});
+
 	console.log('Files to pack: ', files.length);
 
 	var cwd = process.cwd();
 	var archive = new yazl.ZipFile();
 	files.forEach(function(file) {
-		archive.addFile(file, path.relative(cwd, file).replace(/\\/g, '/'));
+		archive.addFile(file, file.replace(/\\/g, '/'));
 	});
 
 	archive.outputStream
