@@ -13,7 +13,7 @@ var window = null;
 // XXX init
 
 app.on('ready', function() {
-	window = new BrowserWindow({width: 980, height: 600});
+	window = new BrowserWindow({width: 980, height: 650});
 	window.loadUrl(`file://${__dirname}/index.html`);
 	window.once('closed', function() {
 		window = null;
@@ -35,6 +35,9 @@ app.on('ready', function() {
 		});
 		update(model);
 		setupEvents(client, model);
+		window.webContents.on('did-finish-load', function() {
+			update(model);
+		});
 	});
 });
 
