@@ -30,6 +30,8 @@
   },
   "devDependencies": {
     "charm": "^1.0.0",
+    "cpy": "^3.4.0",
+    "electron-prebuilt": "^0.31.0",
     "glob-all": "^3.0.1",
     "mocha": "^2.2.5",
     "yazl": "^2.2.2"
