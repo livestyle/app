@@ -1,11 +1,20 @@
 #!/usr/bin/env node
+'use strict';
 
 var fs = require('fs');
 var path = require('path');
 var cpy = require('cpy');
-var yazl = require('yazl');
-var glob = require('glob-all');
+var ncp = require('ncp');
+var del = require('del');
+var extend = require('xtend');
+var mkdirp = require('mkdirp');
+var er = require('electron-rebuild');
+var debug = require('debug')('lsapp:distribute');
 var pkg = require('./package.json');
+var brandAppOSX = require('./lib/branding/osx');
+var zip = require('./lib/branding/zip');
+
+const ELECTRON_VERSION = require('electron-prebuilt/package').version.replace(/-.*/, '');
 
 var appDir = {
 	'darwin': './node_modules/electron-prebuilt/dist/Electron.app',
@@ -13,11 +22,11 @@ var appDir = {
 };
 
 var resDir = {
-	'darwin': path.join(appDir[process.platform], 'Contents/Resources/app'),
-	'win32': path.join(appDir[process.platform], 'resources\\app')
+	'darwin': 'Contents/Resources',
+	'win32': 'resources'
 };
 
-var files = [
+var appFiles = [
 	'{assets,lib,ui}/**',
 	'{main,backend}.js',
 	'index.html',
@@ -25,75 +34,111 @@ var files = [
 	'node_modules/{' + Object.keys(pkg.dependencies) + '}/**'
 ];
 
-const osx = process.platform === 'darwin';
+const isOSX = process.platform === 'darwin';
 
-function copyResources(files) {
+module.exports = function() {
+	var dir = appDir[process.platform];
+
+	var app = {
+		id: 'io.livestyle.app',
+		name: 'LiveStyle',
+		icon: './branding/livestyle.icns',
+		dir,
+		resDir: resDir[process.platform],
+		appDirName: isOSX ? 'LiveStyle.app' : 'livestyle',
+		version: pkg.version
+	};
+
+	return copyApp(app)
+	.then(clean)
+	.then(copyResources)
+	.then(rebuildNative)
+	.then(brand)
+	.then(pack);
+};
+
+function copyApp(app) {
 	return new Promise(function(resolve, reject) {
-		var dest = resDir[process.platform];
-		cpy(files, dest, {nodir: true}, function(err) {
-			if (err) {
-				return reject(err);
-			}
-			resolve();
-		});
-	});
-}
-
-function branding() {
-	return new Promise(function(reject, resolve) {
-		var app = appDir[process.platform];
-		var dest = path.join(path.dirname(app), osx ? 'LiveStyle.app' : 'livestyle');
-
-		fs.rename(app, dest, function(err) {
+		var dest = path.join('dist', process.platform, app.appDirName);
+		debug('copy prestine app from %s to %s', app.dir, dest);
+		mkdirp(dest, function(err) {
 			if (err) {
 				return reject(err);
 			}
 
-			(osx ? brandAppOSX(dest) : brandApp(dest)).then(resolve, reject);
-		});
-	});
-}
-
-function brandAppOSX(app) {
-	// change app name and version in plist files then update icon
-	var plist = [
-		'Contents/Info.plist',
-		'Contents/Frameworks/Electron Helper.app/Contents/Info.plist'
-	];
-
-	return new Promise(function(resolve, reject) {
-		var rename = function(err) {
-			if (err) {
-				return reject(err);
-			}
-
-			if (!plist.length) {
-				// TODO change icon
-				return resolve(app);
-			}
-
-			var file = plist.pop();
-			fs.readFile(file, 'utf8', function(err, contents) {
+			// have to use `ncp` instead of `cpy` to preserve symlinks and file mode
+			ncp(app.dir, path.resolve(dest), function(err) {
 				if (err) {
 					return reject(err);
 				}
-
-				contents = replacePlistKeyValue(contents, 'CFBundleDisplayName', 'LiveStyle');
-				contents = replacePlistKeyValue(contents, 'CFBundleName', 'LiveStyle');
-				contents = replacePlistKeyValue(contents, 'CFBundleDisplayName', 'io.livestyle.app');
-				fs.writeFile(file, contents, rename);
+				resolve(extend(app, {dir: dest}));
 			});
-		};
-
-		rename();
+		});
 	});
 }
 
-function replacePlistKeyValue(str, key, value) {
-	var re = new RegExp('(<key>' + key + '</key>)([\s\n]*)<(\w+)>.*?</\\3>');
-	return str.replace(re, '$1$2<$3>' + value + '</$3>');
+function clean(app) {
+	var dest = path.join(app.dir, app.resDir);
+	debug('clean up %s dir', dest);
+	return del(['atom.icns', 'default_app'], {cwd: dest}).then(function() {
+		return app;
+	});
+}
+
+function copyResources(app) {
+	return new Promise(function(resolve, reject) {
+		var dest = path.join(app.dir, app.resDir, 'app');
+		debug('copy app files to %s', dest);
+		cpy(appFiles, dest, {parents: true, nodir: true}, function(err) {
+			err ? reject(err) : resolve(app);
+		});
+	});
+}
+
+function rebuildNative(app) {
+	debug('rebuilding native modules');
+	return er.installNodeHeaders(ELECTRON_VERSION)
+	.then(function() {
+		return er.rebuildNativeModules(ELECTRON_VERSION, path.join(app.dir, app.resDir, 'app', 'node_modules'));
+	})
+	.then(function() {
+		return Promise.resolve(app);
+	});
+}
+
+function brand(app) {
+	return isOSX ? brandAppOSX(app) : brandApp(app);
 }
 
 function brandApp(app) {
-	
+	// TODO implement
+}
+
+function pack(app) {
+	var dest = null;
+	switch (process.platform) {
+		case 'darwin':
+			dest = `livestyle-osx-v${pkg.version}.zip`;
+			break;
+		case 'win32':
+			var winenv = require('./lib/win-env');
+			dest = `livestyle-win${winenv.X64 ? '64' : '32'}-v${pkg.version}.zip`;
+			break;
+		case 'linux':
+			dest = `livestyle-linux-v${pkg.version}.zip`;
+			break;
+	}
+
+	dest = path.resolve('dist', dest);
+	debug('packing app into %s', dest);
+	return zip(app, dest);
+}
+
+if (require.main === module) {
+	module.exports().then(function(archive) {
+		console.log(archive);
+	}, function(err) {
+		console.error(err.stack);
+		process.exit(1);
+	});
 }
