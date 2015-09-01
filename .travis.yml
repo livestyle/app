@@ -1,3 +1,6 @@
+os: osx
 language: node_js
 node_js:
   - "2.5.0"
+after_success:
+  - npm run distribute
