@@ -2,6 +2,10 @@
 environment:
   nodejs_version: "2.5"
 
+platform:
+  - x86
+  - x64
+
 # Install scripts. (runs after repo cloning)
 install:
   # Get the latest stable version of Node.js or io.js
@@ -11,10 +15,13 @@ install:
 
 # Post-install test scripts.
 test_script:
-  - npm run zip
+  - npm test
+
+after_test:
+  - npm run distribute
 
 artifacts:
-  - path: ls-app.zip
+  - path: dist\*.zip
 
 # Don't actually build.
 build: off
