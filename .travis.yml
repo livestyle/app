@@ -1,11 +1,16 @@
-os: osx
-language: node_js
-node_js:
-  - "2.5.0"
+language:
+  - objective-c
 
-before_install:
+env:
+  - NODE_VERSION="2.5.0"
+
+install:
   - brew update
   - brew install nvm
+  - nvm install $NODE_VERSION
+  - nvm use $NODE_VERSION
+  - npm install
+  - npm test
 
 after_success:
   - npm run distribute
