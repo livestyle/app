@@ -15,9 +15,7 @@ install:
 
 # Post-install test scripts.
 test_script:
-  - npm test
-
-after_test:
+  # - npm test
   - npm run distribute
 
 artifacts:
