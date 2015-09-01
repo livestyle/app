@@ -32,11 +32,12 @@
     "charm": "^1.0.0",
     "cpy": "^3.4.0",
     "del": "^2.0.0",
-    "electron-prebuilt": "^0.31.0",
+    "electron-prebuilt": "^0.31.1",
     "electron-rebuild": "^0.2.5",
     "glob-all": "^3.0.1",
     "mocha": "^2.2.5",
     "ncp": "^2.0.0",
+    "rcedit": "^0.3.0",
     "yazl": "^2.2.2"
   },
   "config": {

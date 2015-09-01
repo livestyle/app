@@ -11,14 +11,17 @@ var mkdirp = require('mkdirp');
 var er = require('electron-rebuild');
 var debug = require('debug')('lsapp:distribute');
 var pkg = require('./package.json');
-var brandAppOSX = require('./lib/branding/osx');
-var zip = require('./lib/branding/zip');
+var zip = require('./branding/zip');
+var brand = {
+	'darwin': require('./branding/osx'),
+	'win32': require('./branding/win')
+};
 
 const ELECTRON_VERSION = require('electron-prebuilt/package').version.replace(/-.*/, '');
 
 var appDir = {
-	'darwin': './node_modules/electron-prebuilt/dist/Electron.app',
-	'win32': 'node_modules\\electron-prebuilt\\dist\\electron'
+	'darwin': path.join('node_modules', 'electron-prebuilt', 'dist', 'Electron.app'),
+	'win32': path.join('node_modules', 'electron-prebuilt', 'dist', 'electron')
 };
 
 var resDir = {
@@ -34,17 +37,19 @@ var appFiles = [
 	'node_modules/{' + Object.keys(pkg.dependencies) + '}/**'
 ];
 
-const isOSX = process.platform === 'darwin';
+const platform = getPlatform();
+const isOSX = platform === 'darwin';
 
 module.exports = function() {
-	var dir = appDir[process.platform];
+	console.log('Packing and branding app for %s platform', platform);
+	var dir = appDir[platform];
 
 	var app = {
 		id: 'io.livestyle.app',
 		name: 'LiveStyle',
-		icon: './branding/livestyle.icns',
+		icon: path.resolve(`./branding/icon/${isOSX ? 'livestyle.icns' : 'livestyle.ico'}`),
 		dir,
-		resDir: resDir[process.platform],
+		resDir: resDir[platform],
 		appDirName: isOSX ? 'LiveStyle.app' : 'livestyle',
 		version: pkg.version
 	};
@@ -53,14 +58,35 @@ module.exports = function() {
 	.then(clean)
 	.then(copyResources)
 	.then(rebuildNative)
-	.then(brand)
+	.then(brand[platform])
 	.then(pack);
 };
 
+function getPlatform() {
+	var platformArg = '--platform';
+	var eqArg = platformArg + '=';
+	var platform = process.platform;
+	process.argv.slice(2).forEach(function(arg, i) {
+		if (arg === platformArg) {
+			platform = process.argv[i + 3];
+		} else if (arg.indexOf(eqArg) === 0) {
+			platform = arg.slice(eqArg.length);
+		}
+	});
+
+	debug('picked platform: %s', platform);
+
+	if (!platform || !appDir[platform]) {
+		throw new Error('Unsupported platform: ' + platform);
+	}
+
+	return platform;
+}
+
 function copyApp(app) {
 	return new Promise(function(resolve, reject) {
-		var dest = path.join('dist', process.platform, app.appDirName);
-		debug('copy prestine app from %s to %s', app.dir, dest);
+		var dest = path.join('dist', platform, app.appDirName);
+		debug('copy pristine app from %s to %s', app.dir, dest);
 		mkdirp(dest, function(err) {
 			if (err) {
 				return reject(err);
@@ -106,26 +132,18 @@ function rebuildNative(app) {
 	});
 }
 
-function brand(app) {
-	return isOSX ? brandAppOSX(app) : brandApp(app);
-}
-
-function brandApp(app) {
-	// TODO implement
-}
-
 function pack(app) {
 	var dest = null;
-	switch (process.platform) {
+	switch (platform) {
 		case 'darwin':
-			dest = `livestyle-osx-v${pkg.version}.zip`;
+			dest = `livestyle-osx-v${app.version}.zip`;
 			break;
 		case 'win32':
 			var winenv = require('./lib/win-env');
-			dest = `livestyle-win${winenv.X64 ? '64' : '32'}-v${pkg.version}.zip`;
+			dest = `livestyle-win${winenv.X64 ? '64' : '32'}-v${app.version}.zip`;
 			break;
 		case 'linux':
-			dest = `livestyle-linux-v${pkg.version}.zip`;
+			dest = `livestyle-linux-v${app.version}.zip`;
 			break;
 	}
 
@@ -138,7 +156,7 @@ if (require.main === module) {
 	module.exports().then(function(archive) {
 		console.log(archive);
 	}, function(err) {
-		console.error(err.stack);
+		console.error(err.stack ? err.stack : err);
 		process.exit(1);
 	});
 }
