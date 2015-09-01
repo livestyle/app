@@ -21,7 +21,7 @@ const ELECTRON_VERSION = require('electron-prebuilt/package').version.replace(/-
 
 var appDir = {
 	'darwin': path.join('node_modules', 'electron-prebuilt', 'dist', 'Electron.app'),
-	'win32': path.join('node_modules', 'electron-prebuilt', 'dist', 'electron')
+	'win32': path.join('node_modules', 'electron-prebuilt', 'dist')
 };
 
 var resDir = {

@@ -2,5 +2,10 @@ os: osx
 language: node_js
 node_js:
   - "2.5.0"
+
+before_install:
+  - brew update
+  - brew install nvm
+
 after_success:
   - npm run distribute
