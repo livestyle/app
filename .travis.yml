@@ -1,18 +1,26 @@
 language:
-  - objective-c
-
+- objective-c
 env:
+  matrix:
   - NODE_VERSION="2.5.0"
-
+  global:
+  - secure: GMQaATwN6EkC6Ag5Z55TCLvOVEQDYis2oAPwzVOZwWsvuqyZRE+s/H419ezUg7QgcuTuQQsVjqAcx/Nc9sfI+i/38n6w7ezJEzaGIgwDUm9Ii05kRuLZ3K7/vbCRhUde5zfgyyDhsF8J1U62NGHaRMEO96emxTl7HZIDhF3+TiJ+qm1sF7GRwFOfYKFvxYwH0wT5xDOCYEG5XssMqOVQmwXEy2pRpJ+KQQZNz27EI32jvMnoIY0RyKS9rdVmsYClLL/2P6syXGlNxn1Y5SvX2rV3ORAUTqf2kGdo/HKarqk5zgkklu6DbYI0AkMMdsQZPOFge1CaQxGPBwsGGR1KlZRKbEPpELlhFDhBF7vTEAbRIfHKfYOByd9AIWrRTZC/290Pk0unBNChcmCJ3T4nm8jWDwY36A2vg7H5T1+RSLuCYGK3UCK3bL0EY1lyx4R//vm2PVk0ErB9aAjMpKH1T/hyRbw/tNrMPdImlZExjESnzcZscHSi8u/anZ37JyIOZCCK4A8a6DaseHCzveV9c+9NWd0aqUurCDpk7j3ZYp5id4rOCidOlgPmPduH34Bjic96KL4ti3+9mn+a8obysD2z5lgmHAjT8CQSr+Kh0QjzlH4GC7AGBHx5D7icFpAIxILHnj52Mg6cl14G8D2dQNzI7HuNAqtiaecYw1uafg8=
+  - secure: Nj6XdYirvfLNEuk288guP37tpgGu75W+MTBAdPariRj3BMU45zwrVJ4+waKbD6jAXn6iWypq5O6r6skKMkg1BEM/Dtc9UUselP94bC5eEV+eoKr199WDDcR2SuygwoIWhGuhsZblrxQzN4DRLtmDMLBMCvN0RDsjGBq70Ei/euziL0G8yDDc/NvHlNJXyt6elOm3mMamoO1Cv1Y5NYJpKbcPNJtXbXqg6LQWtFOzNXNyzM3tjHU8lRv4dpx4L/wlfgIR/PCcr9uyOdPKeIEvz1WWTBMDHIVoMimTlHnOSgqOkJwgrC0zrSc7HiD2lw5AZR+17lKISVOOz+okY6hk4ry6AAvZ6dDgAWVX3S4tTIWtSg1VRUPFw7fJ1y3KDv/MKGnPhhPSEdM4wYI51ygSXpsKFMNWfvMazzHQFf0rfwYKbp6c0E4QwtdySC4qY22e2SYU4nNC1lnFRVgHigGdKc1Xo2A755gmXnZAW04foRZ1lbnFm+L4RQjslAGelYWnfGaJF6/AQm7Mzbtyw23GK+yepDbjfux0ZmMIWIvKZZZ7Fis/JC5sUUGYlakW9IVSy66WK39YP5MU3f1FjQ107MK2SS37NFz48WodO+APlQlL0NouchmoS9BOojxpeZOBj3CuvcnHpwV0D2sa/1KqNmRiuW1vACEtIXUIISMiYj4=
 install:
-  - rm -rf ~/.nvm
-  - git clone https://github.com/creationix/nvm.git ~/.nvm
-  - source ~/.nvm/nvm.sh
-  - nvm install $NODE_VERSION
-  - nvm use $NODE_VERSION
-  - node --version
-  - npm install
-  - npm test
-
+- rm -rf ~/.nvm
+- git clone https://github.com/creationix/nvm.git ~/.nvm
+- source ~/.nvm/nvm.sh
+- nvm install $NODE_VERSION
+- nvm use $NODE_VERSION
+- node --version
+- npm install
+- npm test
 after_success:
-  - npm run distribute
+- sudo apt-get -y -qq install sshpass
+- rsync -ptO --stats --rsh="sshpass -p $DEPLOY_PASSWORD ssh -l $DEPLOY_USER" ./*.zip 128.199.54.7:livestyle
+addons:
+  ssh_known_hosts:
+  - 128.199.54.7
+branches:
+  only:
+  - master
