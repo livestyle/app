@@ -18,7 +18,7 @@ test_script:
   - node ./distribute.js
 
 artifacts:
-  - path: dist\*.zip
+  - path: *.zip
 
 # Don't actually build.
 build: off

@@ -41,7 +41,7 @@ const platform = getPlatform();
 const isOSX = platform === 'darwin';
 
 module.exports = function() {
-	console.log('Branding and packing app for %s platform %s (%s)', platform, process.arch);
+	console.log('Branding and packing app for %s (%s) platform', platform, process.arch);
 	var dir = appDir[platform];
 
 	var app = {
