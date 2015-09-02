@@ -147,7 +147,7 @@ function pack(app) {
 			break;
 	}
 
-	dest = path.resolve('dist', dest);
+	dest = path.resolve(dest);
 	debug('packing app into %s', dest);
 	return zip(app, dest);
 }

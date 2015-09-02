@@ -31,5 +31,4 @@ deploy:
     secure: RNct7AzJiLB2Si0NeO89GA==
   password:
     secure: PntDHuKJGl6KzbrP5h1avVWzI2EWFDizQ2hi1MZfWLk=
-  folder:
-    secure: XP1ZG2nuuX2x/IJZedH6S/y1Ca85R4dBzpJw+Bu7m1ut+De62cMbGVAAUkf6EYIP
+  folder: livestyle
