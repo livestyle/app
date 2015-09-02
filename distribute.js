@@ -41,7 +41,7 @@ const platform = getPlatform();
 const isOSX = platform === 'darwin';
 
 module.exports = function() {
-	console.log('Packing and branding app for %s platform', platform);
+	console.log('Branding and packing app for %s platform %s (%s)', platform, process.arch);
 	var dir = appDir[platform];
 
 	var app = {
@@ -136,14 +136,14 @@ function pack(app) {
 	var dest = null;
 	switch (platform) {
 		case 'darwin':
-			dest = `livestyle-osx-v${app.version}.zip`;
+			dest = `livestyle-osx.zip`;
 			break;
 		case 'win32':
 			var winenv = require('./lib/win-env');
-			dest = `livestyle-win${winenv.X64 ? '64' : '32'}-v${app.version}.zip`;
+			dest = `livestyle-win32.zip`;
 			break;
 		case 'linux':
-			dest = `livestyle-linux-v${app.version}.zip`;
+			dest = `livestyle-linux.zip`;
 			break;
 	}
 

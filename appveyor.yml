@@ -4,7 +4,6 @@ environment:
 
 platform:
   - x86
-  - x64
 
 # Install scripts. (runs after repo cloning)
 install:
