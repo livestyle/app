@@ -31,7 +31,7 @@ module.exports = function(elem) {
 		if (isError(attr)) {
 			// error occurred during plugin installation
 			elem.dataset.extensionState = 'error';
-			$('.extension-message', elem).innerText = attr.error;
+			$('.extension-message', elem).innerHTML = attr.error;
 			return;
 		}
 

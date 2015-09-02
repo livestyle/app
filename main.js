@@ -8,20 +8,26 @@ var backend = require('./backend');
 var connect = require('./lib/client');
 var pkg = require('./package.json');
 
-var window = null;
+const osx = process.platform === 'darwin';
+var mainWindow = null;
+var appModel = null;
 
 // XXX init
 
-app.on('ready', function() {
-	window = new BrowserWindow({width: 980, height: 650});
-	window.loadUrl(`file://${__dirname}/index.html`);
-	window.once('closed', function() {
-		window = null;
-	});
+app.on('window-all-closed', function() {
+	if (!osx) {
+		mainWindow = null;
+		appModel = null;
+		app.quit();
+	}
+});
 
-	var update = function(model) {
-		window.webContents.send('model', model.toJSON());
-	};
+app.on('activate-with-no-open-windows', function() {
+	createMainWindow();
+});
+
+app.on('ready', function() {
+	createMainWindow();
 
 	connect(pkg.config.websocketUrl, function(err, client) {
 		if (err) {
@@ -29,15 +35,12 @@ app.on('ready', function() {
 		}
 
 		info('Client connected');
-		var model = backend(client).on('change', function() {
+		appModel = backend(client).on('change', function() {
 			info('Model updated', this.toJSON());
-			update(this);
+			updateMainWindow(this);
 		});
-		update(model);
-		setupEvents(client, model);
-		window.webContents.on('did-finish-load', function() {
-			update(model);
-		});
+		updateMainWindow(appModel);
+		setupEvents(client, appModel);
 	});
 });
 
@@ -65,6 +68,34 @@ function setupEvents(client, model) {
 	});
 }
 
+function createMainWindow() {
+	mainWindow = new BrowserWindow({
+		width: 980, 
+		height: 650,
+		'min-width': 980, 
+		'min-height': 400,
+		fullscreen: false,
+		title: 'LiveStyle'
+	});
+	mainWindow.loadUrl(`file://${__dirname}/index.html`);
+	mainWindow.once('closed', function() {
+		mainWindow = null;
+	});
+	mainWindow.webContents.on('did-finish-load', function didFinishLoad() {
+		if (appModel) {
+			updateMainWindow(appModel);
+		}
+	});
+
+	return mainWindow;
+}
+
+function updateMainWindow(model) {
+	if (mainWindow) {
+		mainWindow.webContents.send('model', model.toJSON());
+	}
+};
+
 function createError(err) {
 	var data = {error: err.message};
 	if (err.code) {
@@ -78,17 +109,17 @@ function toArray(obj) {
 }
 
 function log() {
-	window.webContents.send('log', toArray(arguments));
+	mainWindow.webContents.send('log', toArray(arguments));
 }
 
 function warn() {
-	window.webContents.send('warn', toArray(arguments));
+	mainWindow.webContents.send('warn', toArray(arguments));
 }
 
 function info() {
-	window.webContents.send('info', toArray(arguments));
+	mainWindow.webContents.send('info', toArray(arguments));
 }
 
 function error() {
-	window.webContents.send('error', toArray(arguments));
+	mainWindow.webContents.send('error', toArray(arguments));
 }

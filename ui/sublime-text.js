@@ -72,7 +72,7 @@ function renderError(elem, data) {
 		message = 'Unable to find Sublime Text installation folder. If you’re using portable version, try to <span class="pseudo-href" data-action="st-manual-install">install it manually</span>.'
 	}
 
-	$('.extension-message', elem).innerText = message;
+	$('.extension-message', elem).innerHTML = message;
 }
 
 function installStatus(data) {
