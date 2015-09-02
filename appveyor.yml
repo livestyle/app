@@ -16,7 +16,7 @@ install:
 # Post-install test scripts.
 test_script:
   # - npm test
-  - npm run distribute
+  - node ./distribute.js
 
 artifacts:
   - path: dist\*.zip

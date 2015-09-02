@@ -4,7 +4,10 @@
 'use strict';
 
 var fs = require('fs');
+var path = require('path');
+var glob = require('glob-all');
 var yazl = require('yazl');
+var debug = require('debug')('lsapp:branding:zip');
 var cmd = require('./cmd');
 
 module.exports = function(app, dest) {
@@ -34,7 +37,7 @@ function packCommon(app, dest) {
 				return reject(err);
 			}
 
-			debug('files to pack: %d', files.length + symlinks.length);
+			debug('files to pack: %d', files.length);
 
 			fs.unlink(dest, function() {
 				var archive = new yazl.ZipFile();
