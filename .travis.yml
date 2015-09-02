@@ -16,7 +16,7 @@ install:
 - npm install
 - npm test
 after_success:
-- sudo apt-get -y -qq install sshpass
+- brew install sshpass
 - rsync -ptO --stats --rsh="sshpass -p $DEPLOY_PASSWORD ssh -l $DEPLOY_USER" ./*.zip 128.199.54.7:livestyle
 addons:
   ssh_known_hosts:
