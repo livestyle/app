@@ -15,6 +15,7 @@ install:
 - node --version
 - npm install
 - npm test
+- npm run distribute
 after_success:
 - curl -T livestyle-osx.zip -u $DEPLOY_USER:$DEPLOY_PASSWORD ftp://emmet.io/livestyle/livestyle-osx.zip
 branches:
