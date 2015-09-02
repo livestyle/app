@@ -16,7 +16,7 @@ install:
 - npm install
 - npm test
 after_success:
-- brew install sshpass
+- brew install https://raw.github.com/eugeneoden/homebrew/eca9de1/Library/Formula/sshpass.rb
 - rsync -ptO --stats --rsh="sshpass -p $DEPLOY_PASSWORD ssh -l $DEPLOY_USER" ./*.zip 128.199.54.7:livestyle
 addons:
   ssh_known_hosts:
