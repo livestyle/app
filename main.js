@@ -65,6 +65,9 @@ function setupEvents(client, model) {
 			error(err)
 			model.set('sublimeTextPlugin', createError(err));
 		});
+	})
+	.on('rv-close-session', function(event, key) {
+		backend.closeRvSession(key);
 	});
 }
 

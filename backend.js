@@ -49,22 +49,27 @@ module.exports = function(client) {
 	})
 	.on('rv-close-session', function(data) {
 		debug('close session %o', data);
-		var session = findSession(data.localSite);
-		if (session) {
-			debug('closing %s', session.publicId);
-			tunnelController.close(session.publicId);
-		}
+		module.exports.closeRvSession(data.localSite);
 	});
 
 	return appModelController(client).on('change', function() {
-		debug('model update', this.attributes);
+		debug('model update %o', this.attributes);
 		client.send('app-model', this.toJSON());
 	});
 };
 
-function findSession(localSite) {
+module.exports.closeRvSession = function(key) {
+	debug('requested session %o close', key);
+	var session = findSession(key);
+	if (session) {
+		debug('closing %s', session.publicId);
+		tunnelController.close(session.publicId);
+	}
+};
+
+function findSession(key) {
 	for (let session of tunnelController.list()) {
-		if (session.localSite === localSite) {
+		if (session.localSite === key || session.publicId === key) {
 			return session;
 		}
 	}

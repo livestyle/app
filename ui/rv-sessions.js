@@ -11,9 +11,9 @@ module.exports = function(elem) {
 	elem.addEventListener('click', function(evt) {
 		if (evt.target.classList.contains('rv-session-remove')) {
 			// clicked on "remove" icon
-			var item = closest('.rv-session-item');
+			var item = closest(evt.target, '.rv-session-item');
 			if (item) {
-				ipc.send('rv-close', item.id);
+				ipc.send('rv-close-session', item.id);
 			}
 		}
 	});
