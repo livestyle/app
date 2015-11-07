@@ -1,6 +1,8 @@
 'use strict';
 
 var assert = require('assert');
+var path = require('path');
+var http = require('http');
 var tc = require('../lib/controller/tunnel');
 
 // No need to check full Remote View connectivity,
@@ -26,7 +28,7 @@ describe('Tunnel Cluster controller', function() {
 				assert.equal(updates[0][0].state, 'idle');
 
 				// the second update is empty list because cluster was destroyed
-				assert.deepEqual(updates[1], []);				
+				assert.deepEqual(updates[1], []);
 				done();
 			}, 20);
 		});
@@ -39,5 +41,24 @@ describe('Tunnel Cluster controller', function() {
 			retryCount: 2,
 			retryDelay: 100,
 		});
+	});
+
+	it('"file:" origin', function(done) {
+		tc.on('clusterCreate', function(cluster) {
+			// server must be closed when session is destroyed
+			cluster._server.on('close', done);
+			
+			http.get(cluster.options.localSite + '/index.html', res => {
+				assert.equal(res.statusCode, 200);
+				assert.equal(res.headers['content-type'], 'text/html; charset=UTF-8');
+				cluster.destroy();
+			}).on('error', done);
+		});
+
+		tc.create({
+			publicId: 'rv-test.livestyle.io',
+			localSite: `file://` + path.join(__dirname, 'static').replace(/\\/g, '/'),
+			connectUrl: 'http://localhost:8902/fake-session'
+		}).catch(done);
 	});
 });

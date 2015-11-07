@@ -28,24 +28,30 @@ module.exports = function(client) {
 	})
 	.on('rv-create-session', function(data) {
 		debug('create session %o', data);
+
+		var onError = err => {
+			debug('error when creating session for %s: %s', data.localSite, err ? err.message : 'unknown');
+			var message = err ? err.message : 'Unable to establish tunnel with Remote View server';
+			client.send('rv-session', {
+				localSite: data.localSite,
+				error: message + '. Please try again later.'
+			});
+		};
+
 		var onConnect = function() {
 			debug('created session for %s', data.localSite);
 			client.send('rv-session', sessionPayload(data.localSite));
 			this.removeListener('destroy', onDestroy);
 		};
+		
 		var onDestroy = function(err) {
-			debug('unable to create session for %s: %s', data.localSite, err ? err.message : 'unknown');
-			var message = err ? err.message : 'Unable to establish tunnel with Remote View server'
-			client.send('rv-session', {
-				localSite: data.localSite,
-				error: message + '. Please try again later.'
-			});
+			err && onError(err);
 			this.removeListener('connect', onConnect);
 		};
 
-		tunnelController.create(data)
-		.once('connect', onConnect)
-		.once('destroy', onDestroy);
+		tunnelController.create(data).then(cluster => {
+			cluster.once('connect', onConnect).once('destroy', onDestroy);
+		}, onError);
 	})
 	.on('rv-close-session', function(data) {
 		debug('close session %o', data);
