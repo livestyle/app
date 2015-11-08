@@ -4,6 +4,7 @@ var assert = require('assert');
 var path = require('path');
 var http = require('http');
 var tc = require('../lib/controller/tunnel');
+var fileServer = require('../lib/controller/file-server');
 
 // No need to check full Remote View connectivity,
 // simply check that controller is properly instantiated and emits messages
@@ -44,10 +45,11 @@ describe('Tunnel Cluster controller', function() {
 	});
 
 	it('"file:" origin', function(done) {
-		tc.on('clusterCreate', function(cluster) {
+		tc.once('clusterCreate', function(cluster) {
 			// server must be closed when session is destroyed
-			cluster._server.on('close', done);
-			
+			var server = fileServer.find(cluster.options.localSite);
+			assert(server);
+			server.once('close', done);
 			http.get(cluster.options.localSite + '/index.html', res => {
 				assert.equal(res.statusCode, 200);
 				assert.equal(res.headers['content-type'], 'text/html; charset=UTF-8');
@@ -55,10 +57,13 @@ describe('Tunnel Cluster controller', function() {
 			}).on('error', done);
 		});
 
-		tc.create({
-			publicId: 'rv-test.livestyle.io',
-			localSite: `file://` + path.join(__dirname, 'static').replace(/\\/g, '/'),
-			connectUrl: 'http://localhost:8902/fake-session'
-		}).catch(done);
+		fileServer(`file://` + path.join(__dirname, 'static').replace(/\\/g, '/'))
+		.then(origin => {
+			tc.create({
+				publicId: 'rv-test.livestyle.io',
+				localSite: origin,
+				connectUrl: 'http://localhost:8902/fake-session'
+			});
+		}, done);
 	});
 });

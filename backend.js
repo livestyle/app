@@ -9,8 +9,10 @@
 'use strict';
 
 var debug = require('debug')('lsapp:backend');
+var extend = require('xtend');
 var tunnelController = require('./lib/controller/tunnel');
 var appModelController = require('./lib/controller/app-model');
+var fileServerController = require('./lib/controller/file-server');
 
 module.exports = function(client) {
 	client
@@ -19,17 +21,26 @@ module.exports = function(client) {
 		client.send('rv-pong');
 	})
 	.on('rv-get-session', function(data) {
-		var localSite = data && data.localSite;
-		debug('get session for %s', localSite);
-		client.send('rv-session', sessionPayload(localSite));
+		var origin = data && data.localSite;
+		debug('get session for %s', origin);
+		client.send('rv-session', sessionPayload(origin));
 	})
 	.on('rv-get-session-list', function() {
-		client.send('rv-session-list', tunnelController.list());
+		var sessions = tunnelController.list()
+		.map(function(session) {
+			// if this is a local server, rewite its localSite to server docroot
+			var localServer = fileServerController.find(session.localSite);
+			if (localServer) {
+				session = extend(session, {localSite: localServer.rv.docroot});
+			}
+			return session;
+		});
+		client.send('rv-session-list', sessions);
 	})
 	.on('rv-create-session', function(data) {
 		debug('create session %o', data);
 
-		var onError = err => {
+		var onError = function(err) {
 			debug('error when creating session for %s: %s', data.localSite, err ? err.message : 'unknown');
 			var message = err ? err.message : 'Unable to establish tunnel with Remote View server';
 			client.send('rv-session', {
@@ -49,14 +60,31 @@ module.exports = function(client) {
 			this.removeListener('connect', onConnect);
 		};
 
-		tunnelController.create(data).then(cluster => {
-			cluster.once('connect', onConnect).once('destroy', onDestroy);
-		}, onError);
+		tunnelController.create(data)
+		.once('connect', onConnect)
+		.once('destroy', onDestroy);
 	})
 	.on('rv-close-session', function(data) {
 		debug('close session %o', data);
 		module.exports.closeRvSession(data.localSite);
+	})
+	.on('rv-create-http-server', function(data) {
+		fileServerController(data.docroot)
+		.then(function(origin) {
+			client.send('rv-http-server', {
+				docroot: data.docroot,
+				origin
+			});
+		})
+		.catch(function(err) {
+			client.send('rv-http-server', {
+				docroot: data.docroot,
+				error: err.message
+			});
+		});
 	});
+
+	fileServerController.forward(client);
 
 	return appModelController(client).on('change', function() {
 		debug('model update %o', this.attributes);
@@ -66,8 +94,8 @@ module.exports = function(client) {
 
 module.exports.closeRvSession = function(key) {
 	debug('requested session %o close', key);
-	var session = findSession(key);
-	if (session) {
+	var session = sessionPayload(key);
+	if (session && !session.error) {
 		debug('closing %s', session.publicId);
 		tunnelController.close(session.publicId);
 	}
@@ -82,7 +110,19 @@ function findSession(key) {
 }
 
 function sessionPayload(localSite) {
-	return findSession(localSite) || {
+	var session = findSession(localSite);
+	if (!session) {
+		// mayabe its a local web-server?
+		var localServer = fileServerController.find(localSite);
+		if (localServer) {
+			session = findSession(localServer.rv.address);
+			if (session) {
+				session = extend(session, {localSite})
+			}
+		}
+	}
+
+	return session || {
 		localSite,
 		error: 'Session not found'
 	};
