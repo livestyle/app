@@ -8,7 +8,7 @@ var shell = require('shell');
 var chrome = require('./chrome');
 var st = require('./sublime-text');
 var rv = require('./rv-sessions');
-var popupController = require('./popup');
+// var popupController = require('./popup');
 var $ = require('./utils').qs;
 var closest = require('./utils').closest;
 var apps = require('../lib/apps.json');
@@ -17,7 +17,7 @@ function init() {
 	var chromeRender = chrome($('.extension-item[data-extension-id=chrome]'));
 	var stRender = st($('.extension-item[data-extension-id=st]'));
 	var rvRender = rv($('.rv-pane'));
-	popupController();
+	// popupController();
 
 	ipc.on('model', function(model) {
 		chromeRender(model.chromePlugin);
@@ -36,8 +36,6 @@ function init() {
 	.on('error', function(args) {
 		console.error.apply(console, args);
 	});
-
-	$('#man-chrome .chrome-install-href').href = apps.chrome.install;
 
 	// open all URLs in default system browser
 	document.addEventListener('click', function(evt) {

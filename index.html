@@ -7,8 +7,8 @@
 </head>
 <body>
 	<section class="main-pane">
-		<h1>LiveStyle plugins</h1>
-		<p>To provide the best live editing experience, LiveStyle integrates directly into your browser and editor. Currently, LiveStyle is available for <a href="http://www.google.com/chrome/">Google Chrome</a> browser and <a href="http://www.sublimetext.com/3">Sublime Text 3</a> editor.</p>
+		<h1>LiveStyle</h1>
+		<a href="http://livestyle.io/docs/"><i class="help"></i></a>
 		<ul class="extension">
 			<li class="extension-item" data-extension-id="chrome" data-extension-state="progress">
 				<i class="extension-icon extension-icon__chrome"></i>
@@ -22,7 +22,7 @@
 					</span>
 				</div>
 				<div class="extension-message"></div>
-				<div class="extension-manual-install"><span class="pseudo-href" data-popup="man-chrome">Manual installation</span></div>
+				<div class="extension-manual-install"><a href="http://livestyle.io/docs/#google-chrome-plugin">Manual installation</a></div>
 			</li>
 			<li class="extension-item" data-extension-state="idle" data-extension-id="st">
 				<i class="extension-icon"></i>
@@ -36,23 +36,15 @@
 					</span>
 				</div>
 				<div class="extension-message"></div>
-				<div class="extension-manual-install"><span class="pseudo-href" data-popup="man-st">Manual installation</span></div>
+				<div class="extension-manual-install"><a href="http://livestyle.io/docs/#sublime-text-plugin">Manual installation</a></div>
 			</li>
 		</ul>
-		<!-- <p class="quick-tour"><a href="/">Quick tour</a></p> -->
 	</section>
-	<section class="rv-pane rv-pane__disabled">
+	<section class="rv-pane rv-pane_disabled">
 		<h2>Remote View sessions</h2>
 		<div class="rv-description">
-			<p>Remote View is the easiest and fastest way to preview and live edit your local web-site on any internet-connected browser or device.</p>
-
-			<p>Remote View creates a publicly available domain name like <em>http://some-name.livestyle.io</em> and connects it with your local web-site (for example, <em>http://localhost:8080</em>). So it looks like anyone browsing the public domain is actually browsing your local web-site from your computer.</p>
-
-			<p>Share this public URL with colleagues or customers, preview it on any internet-connected mobile device, virtual machine and so on—with instant LiveStyle updates.</p>
-
-			<p>To start a Remote View session, go to your local web-site in Google Chrome browser, open LiveStyle popup and toggle ”Remote View” button.</p>
-
-			<p class="rv-notice"><strong>Remote View is a paid service available for free during beta-testing.</strong></p>
+			<p class="rv-description__no-sessions">No active sessions</p>
+			<p class="rv-description__help"><a href="http://livestyle.io/docs/remote-view/">What is Remote View?</a></p>
 		</div>
 		<ul class="rv-session">
 			<li class="rv-session-item">
@@ -73,45 +65,45 @@
 				</div>
 				<i class="rv-session-remove"></i>
 			</li>
+			<li class="rv-session-item">
+				<div class="rv-session-public-id">
+					<a href="http://another-project.livestyle.io">http://another-project.livestyle.io</a>
+				</div>
+				<div class="rv-session-local">
+					<a href="http://localhost:8000">http://localhost:8000</a>
+				</div>
+				<i class="rv-session-remove"></i>
+			</li>
+			<li class="rv-session-item">
+				<div class="rv-session-public-id">
+					<a href="http://another-project.livestyle.io">http://another-project.livestyle.io</a>
+				</div>
+				<div class="rv-session-local">
+					<a href="http://localhost:8000">http://localhost:8000</a>
+				</div>
+				<i class="rv-session-remove"></i>
+			</li>
+			<li class="rv-session-item">
+				<div class="rv-session-public-id">
+					<a href="http://another-project.livestyle.io">http://another-project.livestyle.io</a>
+				</div>
+				<div class="rv-session-local">
+					<a href="http://localhost:8000">http://localhost:8000</a>
+				</div>
+				<i class="rv-session-remove"></i>
+			</li>
+			<li class="rv-session-item">
+				<div class="rv-session-public-id">
+					<a href="http://another-project.livestyle.io">http://another-project.livestyle.io</a>
+				</div>
+				<div class="rv-session-local">
+					<a href="http://localhost:8000">http://localhost:8000</a>
+				</div>
+				<i class="rv-session-remove"></i>
+			</li>
 		</ul>
 	</section>
 
-	<div class="popup" id="man-st">
-		<div class="popup-content">
-			<i class="popup-close"></i>
-			<h3>Sublime Text plugin installation</h3>
-
-			<div class="popup-row">
-				<div class="popup-column">
-					<h4>Install via <a href="http://packagecontrol.io">Package Control</a> (recommended)</h4>
-					<p>You must have Package Control <a href="https://packagecontrol.io/installation">installed</a> first.</p>
-					<ol>
-						<li>In Sublime Text, open Command Palette with <em>Tools &gt; Command Palette...</em> menu item.</li>
-						<li>Type <code>add repository</code> to find <em>Package Control: Add Repository</em> command and hit Enter.</li>
-						<li>Paste the following URL into the opened panel: <a href="https://github.com/livestyle/sublime-text">https://github.com/livestyle/sublime-text</a>. Hit Enter.</li>
-					</ol>
-					<p>Wait a few moments until extension is installed.</p>
-				</div>
-				<div class="popup-column">
-					<h4>Manual installation</h4>
-					<ol>
-						<li>In Sublime Text, pick <em>Preference > Browse Packages...</em> menu item to open <code>Packages</code> folder.</li>
-						<li>Create <code>LiveStyle</code> folder in it.</li>
-						<li><a href="https://github.com/livestyle/sublime-text/archive/master.zip">Download package ZIP</a> and extract its contents into a newly created <code>LiveStyle</code> folder. Note that in most cases the downloaded ZIP will be unpacked into a sub-folder: you have to copy files from that sub-folder into <code>LiveStyle</code> folder you’ve created before.</li>
-						<li>Restart Sublime Text.</li>
-					</ol>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="popup" id="man-chrome">
-		<div class="popup-content">
-			<i class="popup-close"></i>
-			<h3>Google Chrome extension installation</h3>
-			<p>Go to <a href="" class="chrome-install-href">Chrome WebStore</a> and click on “Add to Chrome” button</p>
-		</div>
-	</div>
 	<script>
 	require('./ui/controller');
 	</script>

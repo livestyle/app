@@ -1,6 +1,7 @@
 'use strict';
 
-var app = require('app');
+var menubar = require('menubar')
+// var app = require('app');
 var ipc = require('ipc');
 var BrowserWindow = require('browser-window');
 var debug = require('debug')('lsapp:main');
@@ -10,25 +11,17 @@ var pkg = require('./package.json');
 
 const osx = process.platform === 'darwin';
 var mainWindow = null;
-var appModel = null;
+var appModel = {};
 
 // XXX init
 
-app.on('window-all-closed', function() {
-	if (!osx) {
-		mainWindow = null;
-		appModel = null;
-		app.quit();
-	}
-});
-
-app.on('activate-with-no-open-windows', function() {
-	createMainWindow();
+var app = menubar({
+	width: 380,
+	height: 360,
+	preloadWindow: true
 });
 
 app.on('ready', function() {
-	createMainWindow();
-
 	connect(pkg.config.websocketUrl, function(err, client) {
 		if (err) {
 			return error(err);
@@ -42,6 +35,13 @@ app.on('ready', function() {
 		updateMainWindow(appModel);
 		setupEvents(client, appModel);
 	});
+});
+
+app.on('show', () => updateMainWindow(appModel));
+
+app.on('after-create-window', () => {
+	app.window.webContents.on('did-finish-load', () => updateMainWindow(appModel));
+	// app.window.openDevTools();
 });
 
 function setupEvents(client, model) {
@@ -71,34 +71,6 @@ function setupEvents(client, model) {
 	});
 }
 
-function createMainWindow() {
-	mainWindow = new BrowserWindow({
-		width: 980, 
-		height: 650,
-		'min-width': 980, 
-		'min-height': 400,
-		fullscreen: false,
-		title: 'LiveStyle'
-	});
-	mainWindow.loadUrl(`file://${__dirname}/index.html`);
-	mainWindow.once('closed', function() {
-		mainWindow = null;
-	});
-	mainWindow.webContents.on('did-finish-load', function didFinishLoad() {
-		if (appModel) {
-			updateMainWindow(appModel);
-		}
-	});
-
-	return mainWindow;
-}
-
-function updateMainWindow(model) {
-	if (mainWindow) {
-		mainWindow.webContents.send('model', model.toJSON());
-	}
-};
-
 function createError(err) {
 	var data = {error: err.message};
 	if (err.code) {
@@ -111,18 +83,26 @@ function toArray(obj) {
 	return Array.prototype.slice.call(obj, 0);
 }
 
+function updateMainWindow(model) {
+	_send('model', model.toJSON());
+}
+
 function log() {
-	mainWindow.webContents.send('log', toArray(arguments));
+	_send('log', toArray(arguments));
 }
 
 function warn() {
-	mainWindow.webContents.send('warn', toArray(arguments));
+	_send('warn', toArray(arguments));
 }
 
 function info() {
-	mainWindow.webContents.send('info', toArray(arguments));
+	_send('info', toArray(arguments));
 }
 
 function error() {
-	mainWindow.webContents.send('error', toArray(arguments));
+	_send('error', toArray(arguments));
+}
+
+function _send(name, args) {
+	app.window && app.window.webContents.send(name, args);
 }

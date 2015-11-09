@@ -22,6 +22,7 @@
     "connect": "^3.4.0",
     "debug": "^2.2.0",
     "graceful-fs": "^4.1.2",
+    "menubar": "^2.3.0",
     "mkdirp": "^0.5.1",
     "remote-view-client": "livestyle/remote-view-client",
     "serve-static": "^1.10.0",

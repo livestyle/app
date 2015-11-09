@@ -19,11 +19,11 @@ html, body {
 }
 
 body {
-	display: flex;
-	font-family: Lato, 'Helvetica Neue', arial, sans-serif;
+	font-family: Lucida Grande, 'Helvetica Neue', arial, sans-serif;
 	font-size: 14px;
-	color: #7c8d8e;
+	color: #000;
 	line-height: 1.6;
+	background-image: linear-gradient(#ddd 0%, #ffffff 60%);
 }
 
 h1, h2 {
@@ -31,11 +31,18 @@ h1, h2 {
 	line-height: 1.2;
 	margin-top: 0;
 	font-weight: normal;
-	color: #30485f;
+	color: #000;
 }
 
 h1 {
 	text-align: center;
+	font-size: 18px;
+	margin: 0;
+	height: 40px;
+	line-height: 40px;
+	background: #F9F9F9;
+	border-bottom: 1px solid #bbb;
+	box-shadow: 0 1px 2px rgba(0,0,0,0.16);
 }
 
 a, .pseudo-href {
@@ -58,19 +65,21 @@ i {
 }
 
 button {
-	padding: 10px 19px;
+	padding: 4px 10px 5px;
 	line-height: 1.4;
-	font-size: 1.1em;
-	color: #fff;
+	font-family: Lucida Grande, 'Helvetica Neue', arial, sans-serif;
+	color: #20B89A;
 	cursor: pointer;
-	background-color: #1abc9c;
-	border: none;
-	border-radius: 6px;
+	background-color: #fff;
+	border: 1px solid #20B89A;
+	border-radius: 1.5em;
 	transition: background-color .25s linear;
+	transition-property: background-color, color;
 }
 
 button:hover {
-	background-color: #48c9b0;
+	background-color: #20B89A;
+	color: #fff;
 }
 
 .pseudo-href {
@@ -79,34 +88,51 @@ button:hover {
 
 .main-pane,
 .rv-pane {
-	padding: 30px;
 	box-sizing: border-box;
-	height: 100%;
 	position: relative;
 	overflow: auto;
+}
+
+i.help {
+	position: absolute;
+	font-size: 19px;
+	top: 5px;
+	right: 10px;
+	color: #bbb;
+	z-index: 5;
+	transition: color 0.3s;
+}
+
+i.help:hover {
+	color: #888;
+}
+
+i.help::before {
+	content: '\e611';
 }
 
 .extension {
 	display: flex;
 	justify-content: space-between;
-	margin: 40px -30px;
 	padding: 0;
 	list-style-type: none;
+	margin: 0;
+	font-size: 11px;
 }
 
 .extension-item {
 	display: block;
-	width: 235px;
+	width: 50%;
 	text-align: center;
-	margin: 0 30px;
 	flex-grow: 1;
+	padding: 15px 0;
 }
 
 .extension-icon {
 	display: block;
-	width: 160px;
-	height: 160px;
-	margin: 0 auto 13px;
+	width: 64px;
+	height: 64px;
+	margin: 0 auto 8px;
 	position: relative;
 	font-style: normal;
 }
@@ -126,25 +152,25 @@ button:hover {
 	bottom: 0;
 	right: 0;
 	font-family: Flat-UI-Icons;
-	font-size: 30px;
+	font-size: 18px;
 }
 
 .extension-message {
-	padding: 10px 0;
+	padding: 5px 0;
 	line-height: 1.4;
 	font-size: 1.1em;
-	color: #829793;
+	color: #999;
 	display: none;
 }
 
 .extension-progress {
-	margin-top: 10px;
 	display: none;
+	padding-top: 5px;
 }
 
 .extension-manual-install {
-	font-size: 0.8em;
-	margin-top: 1em;
+	font-size: 0.9em;
+	margin-top: 0.4em;
 	display: none;
 }
 
@@ -190,17 +216,6 @@ button:hover {
 	display: block;
 }
 
-.quick-tour {
-	font-size: 1.8em;
-	position: absolute;
-	bottom: 30px;
-	left: 0;
-	width: 100%;
-	text-align: center;
-	line-height: 1;
-	margin: 0;
-}
-
 .action-btn {
 	display: inline-block;
 	padding: 7px 11px;
@@ -221,44 +236,56 @@ button:hover {
  *******************************/
 
 .rv-pane {
-	width: 360px;
-	flex-shrink: 0;
-	color: #fff;
-	background: #e57c2c;
-}
-
-.rv-pane__disabled {
-	color: #7c8d8e;
-	background-color: #eff0f2;
+	background: #fff;
+	box-shadow: 0px 0px 7px 0px rgba(0,0,0,0.18);
+	font-size: 12px;
+	height: 170px;
 }
 
 .rv-pane h2 {
-	color: inherit;
+	color: #8C8C8C;
+	text-transform: uppercase;
+	font-size: 12px;
+	font-weight: bold;
+	padding: 6px 12px;
+	border-bottom: 1px solid #E6E6E6;
+	margin: 0;
 }
 
 .rv-description {
 	display: none;
+	text-align: center;
+	padding-top: 40px;
+	color: #ccc;
 }
 
-.rv-pane__disabled .rv-description {
+.rv-description__no-sessions {
+	margin-bottom: 5px;
+	font-size: 1.2em;
+}
+
+.rv-description__help {
+	font-size: 0.9em;
+}
+
+.rv-pane_disabled .rv-description {
 	display: block;
 }
 
-.rv-pane__disabled .rv-session {
+.rv-pane_disabled .rv-session {
 	display: none;
 }
 
 .rv-session {
 	display: block;
 	list-style-type: none;
-	margin: 0 -30px;
 	padding: 0;
+	margin: 0;
 }
 
 .rv-session-item {
-	padding: 11px 30px;
-	border-top: 2px solid rgba(255, 255, 255, 0.2);
-	position: relative;
+	padding: 8px 12px;
+	border-bottom: 1px solid #E6E6E6;
 }
 
 .rv-session-item:first-child {
@@ -274,26 +301,21 @@ button:hover {
 	text-decoration: underline;
 }
 
-.rv-session-public-id {
-	font-size: 1em;
-	color: #fff;
-}
-
 .rv-session-local {
-	color: #f1c22a;
+	color: #9E9E9E;
 	font-size: 0.9em;
 }
 
 .rv-session-remove {
 	position: absolute;
 	right: 20px;
-	top: 0.9em;
 	color: #C0392B;
 	font-size: 1.3em;
 	cursor: pointer;
 	opacity: 0;
 	transition: opacity 0.25s linear;
 	-webkit-font-smoothing: antialiased;
+	margin-top: -1.9em;
 }
 
 .rv-session-remove::before {
@@ -307,91 +329,6 @@ button:hover {
 .rv-notice {
 	font-size: 1.2em;
 	color: #293d51;
-}
-
-/* Popup */
-.popup {
-	position: fixed;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	z-index: 10;
-	background: rgba(127, 140, 141, 0.8);
-	pointer-events: none;
-	transition: opacity 0.3s;
-	opacity: 0;
-}
-
-.popup_visible {
-	opacity: 1;
-	pointer-events: auto;
-}
-
-.popup-content {
-	top: 50px;
-	right: 50px;
-	bottom: 50px;
-	left: 50px;
-	position: absolute;
-	background: #fff;
-	padding: 30px;
-	box-shadow: 0 5px 30px rgba(0,0,0,0.4);
-	overflow: auto;
-	transition: opacity 0.3s, transform 0.3s;
-	opacity: 0;
-	transform: translateY(40%);
-}
-
-.popup_visible .popup-content {
-	opacity: 1;
-	transform: translateY(0);
-}
-
-.popup-row {
-	display: flex;
-	justify-content: space-between;
-}
-
-.popup-column {
-	width: 45%;
-}
-
-.popup-close {
-	display: block;
-	font-family: 'Flat-UI-Icons';
-	position: absolute;
-	font-size: 1.5em;
-	font-style: normal;
-	font-weight: normal;
-	top: 15px;
-	right: 15px;
-	color: #C0392B;
-	cursor: pointer;
-}
-
-.popup-close:hover {
-	color: #E74C3C;
-}
-
-.popup-close::before {
-	content: '\e609';
-}
-
-.popup h3 {
-	font-weight: normal;
-	font-size: 2em;
-	line-height: 1.2;
-	margin-top: 0;
-	text-align: center;
-	color: #2C3E50;
-}
-
-.popup h4 {
-	font-weight: normal;
-	font-size: 1.3em;
-	line-height: 1.2;
-	margin-top: 0;
 }
 
 /* Spinner */

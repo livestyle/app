@@ -22,7 +22,7 @@ module.exports = function(elem) {
 		sessionList = sessionList || [];
 		console.log('update with list', sessionList);
 
-		elem.classList.toggle('rv-pane__disabled', !sessionList.length);
+		elem.classList.toggle('rv-pane_disabled', !sessionList.length);
 		$('.rv-session', elem).innerHTML = sessionList.map(function(session) {
 			return `<li class="rv-session-item" id="${session.publicId}" data-rv-state="${session.state}">
 				<div class="rv-session-public-id">
