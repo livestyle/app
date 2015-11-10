@@ -1,5 +1,6 @@
 'use strict';
 
+var path = require('path');
 var menubar = require('menubar')
 var ipc = require('ipc');
 var BrowserWindow = require('browser-window');
@@ -13,7 +14,8 @@ var appModel = {};
 var app = menubar({
 	width: 380,
 	height: 360,
-	preloadWindow: true
+	preloadWindow: true,
+	icon: path.resolve(__dirname, 'assets/menu-icon.png')
 });
 
 app.on('ready', function() {
