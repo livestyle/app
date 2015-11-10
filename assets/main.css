@@ -93,22 +93,34 @@ button:hover {
 	overflow: auto;
 }
 
-i.help {
+i.help,
+i.quit {
 	position: absolute;
-	font-size: 19px;
-	top: 5px;
+	font-size: 15px;
+	top: 8px;
 	right: 10px;
 	color: #bbb;
 	z-index: 5;
+	cursor: pointer;
 	transition: color 0.3s;
 }
 
-i.help:hover {
+i.quit {
+	left: 10px;
+	right: auto;
+}
+
+i.help:hover,
+i.quit:hover {
 	color: #888;
 }
 
 i.help::before {
 	content: '\e611';
+}
+
+i.quit::before {
+	content: '\e609';
 }
 
 .extension {

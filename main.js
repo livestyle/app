@@ -1,7 +1,6 @@
 'use strict';
 
 var menubar = require('menubar')
-// var app = require('app');
 var ipc = require('ipc');
 var BrowserWindow = require('browser-window');
 var debug = require('debug')('lsapp:main');
@@ -9,12 +8,8 @@ var backend = require('./backend');
 var connect = require('./lib/client');
 var pkg = require('./package.json');
 
-const osx = process.platform === 'darwin';
-var mainWindow = null;
-var appModel = {};
-
 // XXX init
-
+var appModel = {};
 var app = menubar({
 	width: 380,
 	height: 360,
@@ -29,7 +24,6 @@ app.on('ready', function() {
 
 		info('Client connected');
 		appModel = backend(client).on('change', function() {
-			info('Model updated', this.toJSON());
 			updateMainWindow(this);
 		});
 		updateMainWindow(appModel);
@@ -41,7 +35,6 @@ app.on('show', () => updateMainWindow(appModel));
 
 app.on('after-create-window', () => {
 	app.window.webContents.on('did-finish-load', () => updateMainWindow(appModel));
-	// app.window.openDevTools();
 });
 
 function setupEvents(client, model) {
@@ -68,7 +61,8 @@ function setupEvents(client, model) {
 	})
 	.on('rv-close-session', function(event, key) {
 		backend.closeRvSession(key);
-	});
+	})
+	.on('quit', () => app && app.app.quit());
 }
 
 function createError(err) {
