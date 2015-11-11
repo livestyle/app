@@ -14,7 +14,6 @@ var appModel = {};
 var app = menubar({
 	width: 380,
 	height: 360,
-	preloadWindow: true,
 	icon: path.resolve(__dirname, 'assets/menu-icon.png')
 });
 

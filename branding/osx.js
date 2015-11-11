@@ -8,7 +8,7 @@ var debug = require('debug')('lsapp:distribute:osx');
 module.exports = function(app) {
 	return updatePlist(app)
 	.then(copyIcon)
-	.then(renameExecutable);
+	// .then(renameExecutable);
 }
 
 function updatePlist(app) {
@@ -35,13 +35,18 @@ function updatePlist(app) {
 				}
 
 				debug('update plist %s', file);
+				var id = app.id;
+				if (file.indexOf('Helper') !== -1) {
+					id += '.helper';
+				}
 				contents = replacePlistKeyValue(contents, {
 					CFBundleDisplayName: app.name,
 					CFBundleName: app.name,
-					CFBundleIdentifier: app.id,
+					CFBundleIdentifier: id,
 					CFBundleIconFile: path.basename(app.icon),
 					CFBundleVersion: app.version,
-					CFBundleExecutable: app.name
+					// CFBundleExecutable: app.name,
+					CFBundleShortVersionString: app.version
 				});
 				fs.writeFile(file, contents, next);
 			});
