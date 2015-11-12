@@ -10,7 +10,7 @@ var extend = require('xtend');
 var mkdirp = require('mkdirp');
 var er = require('electron-rebuild');
 var debug = require('debug')('lsapp:distribute');
-var pkg = require('./package.json');
+var pkg = require('../package.json');
 var zip = require('./branding/zip');
 var brand = {
 	'darwin': require('./branding/osx'),
@@ -18,10 +18,10 @@ var brand = {
 };
 
 const ELECTRON_VERSION = require('electron-prebuilt/package').version.replace(/-.*/, '');
-
+var appBaseDir = path.resolve(__dirname, '../node_modules/electron-prebuilt/dist');
 var appDir = {
-	'darwin': path.join('node_modules', 'electron-prebuilt', 'dist', 'Electron.app'),
-	'win32': path.join('node_modules', 'electron-prebuilt', 'dist')
+	'darwin': path.resolve(appBaseDir, 'Electron.app'),
+	'win32':  appBaseDir
 };
 
 var resDir = {
@@ -37,18 +37,16 @@ var appFiles = [
 	'node_modules/{' + Object.keys(pkg.dependencies) + '}/**'
 ];
 
-const platform = getPlatform();
-const isOSX = platform === 'darwin';
-
-module.exports = function() {
+module.exports = function(platform) {
+	platform = platform || getPlatform();
+	var isOSX = platform === 'darwin';
 	console.log('Branding and packing app for %s (%s) platform', platform, process.arch);
-	var dir = appDir[platform];
-
 	var app = {
 		id: 'io.livestyle.app',
 		name: 'LiveStyle',
-		icon: path.resolve(`./branding/icon/${isOSX ? 'livestyle.icns' : 'livestyle.ico'}`),
-		dir,
+		platform,
+		icon: path.resolve(__dirname, `./branding/icon/${isOSX ? 'livestyle.icns' : 'livestyle.ico'}`),
+		dir: appDir[platform],
 		resDir: resDir[platform],
 		appDirName: isOSX ? 'LiveStyle.app' : 'livestyle',
 		version: pkg.version
@@ -85,7 +83,7 @@ function getPlatform() {
 
 function copyApp(app) {
 	return new Promise(function(resolve, reject) {
-		var dest = path.join('dist', platform, app.appDirName);
+		var dest = path.resolve(__dirname, `../dist/${app.platform}/${app.appDirName}`);
 		debug('copy pristine app from %s to %s', app.dir, dest);
 		mkdirp(dest, function(err) {
 			if (err) {
@@ -134,7 +132,7 @@ function rebuildNative(app) {
 
 function pack(app) {
 	var dest = null;
-	switch (platform) {
+	switch (app.platform) {
 		case 'darwin':
 			dest = `livestyle-osx.zip`;
 			break;
