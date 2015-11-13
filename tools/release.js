@@ -12,7 +12,7 @@ var request = require('request').defaults({
 	json: true,
 	headers: {
 		accept: 'application/vnd.github.v3+json',
-		authorization: 'token 453bdb91ed9d33be66b8bd5f5555108bb68a305f',
+		authorization: 'token ' + process.env.PUBLISH_TOKEN,
 		'user-agent': 'LiveStyle publisher bot'
 	}
 });
