@@ -17,6 +17,10 @@ var request = require('request').defaults({
 	}
 });
 
+if (!process.env.PUBLISH_TOKEN) {
+	throw new Error('No PUBLISH_TOKEN env variable');
+}
+
 module.exports = function(data) {
 	if (!data.domain) {
 		data = extend(data, {domain: 'https://api.github.com'});
