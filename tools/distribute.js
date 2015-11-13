@@ -137,7 +137,6 @@ function pack(app) {
 			dest = `livestyle-osx.zip`;
 			break;
 		case 'win32':
-			var winenv = require('./lib/win-env');
 			dest = `livestyle-win32.zip`;
 			break;
 		case 'linux':
