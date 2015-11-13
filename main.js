@@ -64,6 +64,10 @@ function setupEvents(client, model) {
 		backend.closeRvSession(key);
 	})
 	.on('quit', () => app && app.app.quit());
+
+	// supress 'error' event since in Node.js, in most cases,
+	// it means unhandled exception
+	client.on('error', err => console.error(err));
 }
 
 function createError(err) {
