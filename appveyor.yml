@@ -1,6 +1,8 @@
 # Test against this version of Node.js
 environment:
-  nodejs_version: "2.5"
+  nodejs_version: "4.2.2"
+  PUBLISH_TOKEN:
+    secure: w/pAoJMD7xgxclssGbzQOfgs81EQyiAfkRJMeH6e6bPiJXyUHtr403v9z10zb4GZ
 
 platform:
   - x86
@@ -15,20 +17,10 @@ install:
 # Post-install test scripts.
 test_script:
   # - npm test
-  - node ./distribute.js
+  - node ./tools/publish.js
 
 artifacts:
   - path: livestyle-win32.zip
 
 # Don't actually build.
 build: off
-
-deploy:
-  provider: FTP
-  protocol: sftp
-  host: emmet.io
-  username:
-    secure: RNct7AzJiLB2Si0NeO89GA==
-  password:
-    secure: PntDHuKJGl6KzbrP5h1avVWzI2EWFDizQ2hi1MZfWLk=
-  folder: livestyle
