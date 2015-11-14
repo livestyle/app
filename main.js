@@ -7,6 +7,8 @@ var BrowserWindow = require('browser-window');
 var debug = require('debug')('lsapp:main');
 var backend = require('./backend');
 var connect = require('./lib/client');
+var installChrome = require('./lib/install/chrome');
+var installST = require('./lib/install/sublime-text');
 var pkg = require('./package.json');
 
 // XXX init
@@ -14,10 +16,10 @@ var appModel = {};
 var app = menubar({
 	width: 380,
 	height: 360,
+	resizable: false,
 	icon: path.resolve(__dirname, 'assets/menu-icon.png')
-});
-
-app.on('ready', function() {
+})
+.on('ready', function() {
 	connect(pkg.config.websocketUrl, function(err, client) {
 		if (err) {
 			return error(err);
@@ -29,40 +31,29 @@ app.on('ready', function() {
 		});
 		updateMainWindow(appModel);
 		setupEvents(client, appModel);
+		initialWindowDisplay(app);
 	});
-});
-
-app.on('show', () => updateMainWindow(appModel));
-
-app.on('after-create-window', () => {
+})
+.on('show', () => updateMainWindow(appModel))
+.on('after-create-window', () => {
 	app.window.webContents.on('did-finish-load', () => updateMainWindow(appModel));
 });
 
 function setupEvents(client, model) {
 	ipc.on('install-chrome', function() {
 		log('install Chrome extension');
-		require('./lib/install/chrome')().catch(function(err) {
-			error(err)
-			model.set('chromePlugin', createError(err));
-		});
+		installChrome().catch(err => model.set('chromePlugin', createError(err)));
 	})
 	.on('install-sublime-text', function(event, versions) {
 		versions = versions ? versions.split(',') : ['st2', 'st3'];
 		log('install Sublime Text extension');
-		var install = require('./lib/install/sublime-text');
-
-		install(versions).then(function() {
+		installST(versions).then(function() {
 			// when installed, reset current plugin state and run plugin check again
-			model.unset('sublimeTextPlugin');
-			model.checkStatus('st');
-		}, function(err) {
-			error(err)
-			model.set('sublimeTextPlugin', createError(err));
-		});
+			model.unset('sublimeTextPlugin').checkStatus('st');
+		})
+		.catch(err => model.set('sublimeTextPlugin', createError(err)));
 	})
-	.on('rv-close-session', function(event, key) {
-		backend.closeRvSession(key);
-	})
+	.on('rv-close-session', (event, key) => backend.closeRvSession(key))
 	.on('quit', () => app && app.app.quit());
 
 	// supress 'error' event since in Node.js, in most cases,
@@ -71,6 +62,7 @@ function setupEvents(client, model) {
 }
 
 function createError(err) {
+	error(err);
 	var data = {error: err.message};
 	if (err.code) {
 		data.errorCode = err.code;
@@ -83,7 +75,28 @@ function toArray(obj) {
 }
 
 function updateMainWindow(model) {
-	_send('model', model.toJSON());
+	if (model) {
+		_send('model', model.toJSON());
+	}
+}
+
+/**
+ * Initial window display when app starts: do not quit app when window requested
+ * it for the first time
+ * @param  {App} app
+ * @param  {BrowserWindow} wnd 
+ */
+function initialWindowDisplay(menuApp) {
+	var handled = false;
+	ipc.on('will-quit', evt => {
+		if (!handled) {
+			evt.returnValue = handled = true;
+			menuApp.hideWindow();
+		} else {
+			evt.returnValue = false;
+		}
+	});
+	menuApp.once('after-hide', () => handled = true).showWindow();
 }
 
 function log() {

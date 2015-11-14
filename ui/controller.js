@@ -35,7 +35,11 @@ function init() {
 		console.error.apply(console, args);
 	});
 
-	$('.quit').addEventListener('click', evt => ipc.send('quit'))
+	$('.quit').addEventListener('click', evt => {
+		if (!ipc.sendSync('will-quit')) {
+			ipc.send('quit');
+		}
+	});
 
 	// open all URLs in default system browser
 	document.addEventListener('click', function(evt) {
