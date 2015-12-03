@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter spec",
-    "publish": "node ./tools/publish.js"
+    "publish": "node ./tools/publish.js",
+    "bundle": "node ./tools/distribute.js"
   },
   "repository": {
     "type": "git",

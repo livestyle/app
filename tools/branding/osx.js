@@ -4,13 +4,15 @@ var fs = require('fs');
 var path = require('path');
 var cpy = require('cpy');
 var debug = require('debug')('lsapp:distribute:osx');
+var cmd = require('./cmd');
 
 module.exports = function(app) {
 	return updateMainApp(app)
 	.then(app => updateHelperApp(path.resolve(app.dir, 'Contents/Frameworks/Electron Helper.app'), app))
 	.then(app => updateHelperApp(path.resolve(app.dir, 'Contents/Frameworks/Electron Helper EH.app'), app))
 	.then(app => updateHelperApp(path.resolve(app.dir, 'Contents/Frameworks/Electron Helper NP.app'), app))
-	.then(copyIcon);
+	.then(copyIcon)
+	.then(codesign);
 }
 
 function updateMainApp(app) {
@@ -74,6 +76,15 @@ function copyIcon(app) {
 		return cpy([app.icon], dest, function(err) {
 			err ? reject(err) : resolve(app);
 		});
+	});
+}
+
+function codesign(app) {
+	return new Promise(function(resolve, reject) {
+		var cwd = path.resolve(__dirname, '../../');
+		console.log('codesign cwd', cwd);
+		cmd('tools/osx/codesign.sh', {cwd}, e => e ? reject(e) : resolve(app))
+		.on('data', chunk => console.log(chunk));
 	});
 }
 
