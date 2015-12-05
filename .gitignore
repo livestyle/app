@@ -1,3 +1,5 @@
 node_modules
 *.zip
 dist
+tools/osx/livestyle.cer
+tools/osx/livestyle.p12
