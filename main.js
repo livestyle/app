@@ -12,7 +12,7 @@ var installST = require('./lib/install/sublime-text');
 var pkg = require('./package.json');
 
 // XXX init
-var appModel = {};
+var appModel = null;
 var app = menubar({
 	width: 380,
 	height: 360,
