@@ -16,11 +16,13 @@ function init() {
 	var chromeRender = chrome($('.extension-item[data-extension-id=chrome]'));
 	var stRender = st($('.extension-item[data-extension-id=st]'));
 	var rvRender = rv($('.rv-pane'));
+	var updateBtn = $('.update-available');
 
 	ipc.on('model', function(model) {
 		chromeRender(model.chromePlugin);
 		stRender(model.sublimeTextPlugin);
 		rvRender(model.rvSessions);
+		updateBtn.classList.toggle('hidden', !model.updateAvailable);
 	})
 	.on('log', function(args) {
 		console.log.apply(console, args);
@@ -39,6 +41,12 @@ function init() {
 		if (!ipc.sendSync('will-quit')) {
 			ipc.send('quit');
 		}
+	});
+
+	updateBtn.addEventListener('click', function(evt) {
+		evt.stopPropagation();
+		evt.preventDefault();
+		ipc.send('install-update');
 	});
 
 	// open all URLs in default system browser

@@ -77,6 +77,7 @@ button {
 	border-radius: 1.5em;
 	transition: background-color .25s linear;
 	transition-property: background-color, color;
+	outline: none;
 }
 
 button:hover {
@@ -348,6 +349,27 @@ i.quit::before {
 .rv-notice {
 	font-size: 1.2em;
 	color: #293d51;
+}
+
+.update-available {
+	position: absolute;
+	z-index: 4;
+	top: 11px;
+	right: 35px;
+	padding: 2px 7px 3px;
+	font-size: 9px;
+	border: none;
+	background: #8e44ad;
+	color: #fff;
+	box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.update-available:hover {
+	background: #9c59b6;
+}
+
+.hidden {
+	display: none;
 }
 
 /* Spinner */

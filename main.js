@@ -2,16 +2,20 @@
 
 var path = require('path');
 var menubar = require('menubar')
-var ipc = require('ipc');
-var BrowserWindow = require('browser-window');
+var electron = require('electron');
 var debug = require('debug')('lsapp:main');
 var backend = require('./backend');
 var Model = require('./lib/model');
 var appModelController = require('./lib/controller/app-model');
 var connect = require('./lib/client');
+var autoUpdate = require('./lib/autoupdate');
 var pkg = require('./package.json');
 
+var ipc = electron.ipcMain;
+var BrowserWindow = electron.BrowserWindow;
+
 // XXX init
+require('electron-debug')();
 var appModel = new Model();
 var app = menubar({
 	width: 380,
@@ -27,11 +31,16 @@ var app = menubar({
 		}
 
 		info('Client connected');
-		backend(client);
 		var controller = appModelController(appModel, client);
+		backend(client);
 		updateMainWindow(appModel);
 		setupAppEvents(self.app, controller);
 		initialWindowDisplay(app);
+		autoUpdate(pkg);
+
+		electron.autoUpdater
+		.on('update-available', () => appModel.set('updateAvailable', true))
+		.on('update-not-available', () => appModel.set('updateAvailable', false));
 	});
 })
 .on('show', () => updateMainWindow(appModel))
@@ -55,6 +64,7 @@ function setupAppEvents(app, controller) {
 		log('install Sublime Text extension');
 		controller.installSublimeText(versions).catch(error);
 	})
+	.on('install-update', () => electron.autoUpdater.quitAndInstall())
 	.on('rv-close-session', (event, key) => backend.closeRvSession(key))
 	.on('quit', () => app && app.quit());
 }
