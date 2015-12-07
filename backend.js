@@ -11,7 +11,6 @@
 var debug = require('debug')('lsapp:backend');
 var extend = require('xtend');
 var tunnelController = require('./lib/controller/tunnel');
-var appModelController = require('./lib/controller/app-model');
 var fileServerController = require('./lib/controller/file-server');
 
 module.exports = function(client) {
@@ -86,10 +85,7 @@ module.exports = function(client) {
 
 	fileServerController.forward(client);
 
-	return appModelController(client).on('change', function() {
-		debug('model update %o', this.attributes);
-		client.send('app-model', this.toJSON());
-	});
+	return client;
 };
 
 module.exports.closeRvSession = function(key) {
