@@ -1,6 +1,6 @@
 # Test against this version of Node.js
 environment:
-  nodejs_version: "4.2.2"
+  nodejs_version: "4.1.1"
   PUBLISH_TOKEN:
     secure: w/pAoJMD7xgxclssGbzQOfgs81EQyiAfkRJMeH6e6bPiJXyUHtr403v9z10zb4GZ
 
