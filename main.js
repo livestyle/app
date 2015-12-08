@@ -11,6 +11,10 @@ var connect = require('./lib/client');
 var autoUpdate = require('./lib/autoupdate');
 var pkg = require('./package.json');
 
+if (require('electron-squirrel-startup')) {
+	return;
+}
+
 var ipc = electron.ipcMain;
 var BrowserWindow = electron.BrowserWindow;
 
@@ -21,7 +25,7 @@ var app = menubar({
 	width: 380,
 	height: 360,
 	resizable: false,
-	icon: path.resolve(__dirname, 'assets/menu-icon.png')
+	icon: path.resolve(__dirname, `assets/${process.platform === 'win32' ? 'win-menu-icon.png' : 'menu-icon.png'}`)
 })
 .on('ready', function() {
 	var self = this;

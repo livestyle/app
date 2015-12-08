@@ -8,7 +8,6 @@ var ncp = require('ncp');
 var del = require('del');
 var extend = require('xtend');
 var mkdirp = require('mkdirp');
-var er = require('electron-rebuild');
 var debug = require('debug')('lsapp:distribute');
 var pkg = require('../package.json');
 var zip = require('./branding/zip');
@@ -45,6 +44,10 @@ module.exports = function(platform) {
 		id: 'io.livestyle.app',
 		name: 'LiveStyle',
 		platform,
+		productName: 'Emmet LiveStyle',
+		companyName: 'Emmet.io',
+		copyright: 'Copyright (c) 2015 Sergey Chikuyonok',
+		description: pkg.description,
 		icon: path.resolve(__dirname, `./branding/icon/${isOSX ? 'livestyle.icns' : 'livestyle.ico'}`),
 		dir: appDir[platform],
 		resDir: resDir[platform],
@@ -55,7 +58,6 @@ module.exports = function(platform) {
 	return copyApp(app)
 	.then(clean)
 	.then(copyResources)
-	.then(rebuildNative)
 	.then(brand[platform])
 	.then(pack);
 };
@@ -119,17 +121,6 @@ function copyResources(app) {
 		cpy(appFiles, dest, {parents: true, nodir: true}, function(err) {
 			err ? reject(err) : resolve(app);
 		});
-	});
-}
-
-function rebuildNative(app) {
-	debug('rebuilding native modules');
-	return er.installNodeHeaders(ELECTRON_VERSION)
-	.then(function() {
-		return er.rebuildNativeModules(ELECTRON_VERSION, path.join(app.dir, app.resDir, 'app', 'node_modules'));
-	})
-	.then(function() {
-		return Promise.resolve(app);
 	});
 }
 
