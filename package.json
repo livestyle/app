@@ -39,13 +39,12 @@
   "devDependencies": {
     "cpy": "^3.4.0",
     "del": "^2.0.0",
-    "electron-prebuilt": "^0.34.3",
+    "electron-prebuilt": "^0.35.0",
     "electron-rebuild": "^1.0.2",
     "glob-all": "^3.0.1",
     "mocha": "^2.2.5",
     "ncp": "^2.0.0",
     "rcedit": "^0.3.0",
-    "request": "^2.65.0",
     "yazl": "^2.2.2"
   },
   "config": {

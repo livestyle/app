@@ -34,7 +34,7 @@ var appFiles = [
 	'{main,backend}.js',
 	'index.html',
 	'package.json',
-	'node_modules/{' + Object.keys(pkg.dependencies) + '}/**'
+	'node_modules/{' + Object.keys(pkg.dependencies).join(',') + '}/**'
 ];
 
 module.exports = function(platform) {
@@ -84,18 +84,21 @@ function getPlatform() {
 function copyApp(app) {
 	return new Promise(function(resolve, reject) {
 		var dest = path.resolve(__dirname, `../dist/${app.platform}/${app.appDirName}`);
-		debug('copy pristine app from %s to %s', app.dir, dest);
-		mkdirp(dest, function(err) {
-			if (err) {
-				return reject(err);
-			}
-
-			// have to use `ncp` instead of `cpy` to preserve symlinks and file mode
-			ncp(app.dir, path.resolve(dest), function(err) {
+		debug('clean-up old dest');
+		del(dest).then(() => {
+			debug('copy pristine app from %s to %s', app.dir, dest);
+			mkdirp(dest, function(err) {
 				if (err) {
 					return reject(err);
 				}
-				resolve(extend(app, {dir: dest}));
+
+				// have to use `ncp` instead of `cpy` to preserve symlinks and file mode
+				ncp(app.dir, path.resolve(dest), function(err) {
+					if (err) {
+						return reject(err);
+					}
+					resolve(extend(app, {dir: dest}));
+				});
 			});
 		});
 	});

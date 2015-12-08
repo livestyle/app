@@ -3,3 +3,4 @@ node_modules
 dist
 tools/osx/livestyle.cer
 tools/osx/livestyle.p12
+osx-auto-update.json

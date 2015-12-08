@@ -82,7 +82,6 @@ function copyIcon(app) {
 function codesign(app) {
 	return new Promise(function(resolve, reject) {
 		var cwd = path.resolve(__dirname, '../../');
-		console.log('codesign cwd', cwd);
 		cmd('tools/osx/codesign.sh', {cwd}, e => e ? reject(e) : resolve(app))
 		.on('data', chunk => console.log(chunk));
 	});
