@@ -4,7 +4,7 @@
  */
 'use strict';
 
-var ipc = require('ipc');
+var ipc = require('electron').ipcRenderer;
 var $ = require('./utils').qs;
 
 module.exports = function(elem) {

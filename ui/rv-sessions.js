@@ -3,7 +3,7 @@
  */
 'use strict';
 
-var ipc = require('ipc');
+var ipc = require('electron').ipcRenderer;
 var $ = require('./utils').qs;
 var closest = require('./utils').closest;
 

@@ -3,8 +3,8 @@
  */
 'use strict';
 
-var ipc = require('ipc');
-var shell = require('shell');
+var ipc = require('electron').ipcRenderer;
+var shell = require('electron').shell;
 var chrome = require('./chrome');
 var st = require('./sublime-text');
 var rv = require('./rv-sessions');
@@ -18,22 +18,22 @@ function init() {
 	var rvRender = rv($('.rv-pane'));
 	var updateBtn = $('.update-available');
 
-	ipc.on('model', function(model) {
+	ipc.on('model', function(event, model) {
 		chromeRender(model.chromePlugin);
 		stRender(model.sublimeTextPlugin);
 		rvRender(model.rvSessions);
 		updateBtn.classList.toggle('hidden', !model.updateAvailable);
 	})
-	.on('log', function(args) {
+	.on('log', function(event, args) {
 		console.log.apply(console, args);
 	})
-	.on('info', function(args) {
+	.on('info', function(event, args) {
 		console.info.apply(console, args);
 	})
-	.on('warn', function(args) {
+	.on('warn', function(event, args) {
 		console.warn.apply(console, args);
 	})
-	.on('error', function(args) {
+	.on('error', function(event, args) {
 		console.error.apply(console, args);
 	});
 
