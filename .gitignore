@@ -4,3 +4,4 @@ dist
 tools/osx/livestyle.cer
 tools/osx/livestyle.p12
 osx-auto-update.json
+tools/windows/livestyle.pfx

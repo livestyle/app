@@ -3,8 +3,10 @@
 var fs = require('fs');
 var path = require('path');
 var cpy = require('cpy');
+var parseUrl = require('url').parse;
 var debug = require('debug')('lsapp:distribute:osx');
 var cmd = require('./cmd');
+var pkg = require('../../package.json');
 
 module.exports = function(app) {
 	return updateMainApp(app)
@@ -12,7 +14,9 @@ module.exports = function(app) {
 	.then(app => updateHelperApp(path.resolve(app.dir, 'Contents/Frameworks/Electron Helper EH.app'), app))
 	.then(app => updateHelperApp(path.resolve(app.dir, 'Contents/Frameworks/Electron Helper NP.app'), app))
 	.then(copyIcon)
-	.then(codesign);
+	.then(codesign)
+	.then(pack)
+	.then(autoUpdate);
 }
 
 function updateMainApp(app) {
@@ -119,6 +123,47 @@ function renameFile(from, to) {
 	return new Promise(function(resolve, reject) {
 		fs.rename(from, to, function(err) {
 			err ? reject(err) : resolve(to);
+		});
+	});
+}
+
+function pack(app) {
+	var dest = path.resolve(path.dirname(app.dir), 'livestyle-osx.zip');
+	debug('packing app into %s', dest);
+
+	return new Promise(function(resolve, reject) {
+		cmd('ditto', ['-ck', '--sequesterRsrc', '--keepParent', app.dir, dest], err => err ? reject(err) : resolve(dest));
+	});
+}
+
+function autoUpdate(assets) {
+	// create file with auto-update
+	debug('create auto-update file for assets');
+	
+	if (!Array.isArray(assets)) {
+		assets = [assets];
+	}
+	var repo = parseUrl(pkg.repository.url).pathname.slice(1).replace(/\.git$/, '');
+	var release = 'v' + pkg.version;
+	var reAppPackage = /\.zip$/;
+	let appPackage = assets.reduce((prev, cur) => reAppPackage.test(cur) ? cur : prev, null);
+	if (!appPackage) {
+		return Promise.reject(new Error('No app package for OSX bundle, aborting'));
+	}
+
+	return new Promise((resolve, reject) => {
+		var contents = JSON.stringify({
+			url: `https://github.com/${repo}/releases/download/${release}/${path.basename(appPackage)}`
+		});
+
+		var updateFile = path.join(path.dirname(appPackage), 'osx-auto-update.json');
+		fs.writeFile(updateFile, contents, err => {
+			if (err) {
+				return reject(err);
+			}
+
+			assets.push(updateFile);
+			resolve(assets);
 		});
 	});
 }

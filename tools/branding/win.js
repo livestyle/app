@@ -1,6 +1,6 @@
 'use strict';
 
-var fs = require('fs');
+var fs = require('graceful-fs');
 var path = require('path');
 var rcedit = require('rcedit');
 var extend = require('xtend');
@@ -13,7 +13,8 @@ const EXE = 'electron.exe';
 module.exports = function(app) {
 	return editResources(app)
 	.then(renameExecutable)
-	.then(createInstaller);
+	.then(createInstaller)
+	.then(getAssets);
 };
 
 function editResources(app) {
@@ -57,10 +58,12 @@ function createInstaller(app) {
 			product_name: app.productName,
 			path: app.dir,
 			authors: pkg.author,
-			loading_gif: path.resolve(__dirname, 'resources/install-spinner.gif'),
-			setup_icon: path.resolve(__dirname, 'icon/livestyle.ico'),
+			loading_gif: makePath('resources/install-spinner.gif'),
+			setup_icon: makePath('icon/livestyle.ico'),
 			exe: 'livestyle.exe',
 			out,
+			cert_path: makePath('../windows/livestyle.pfx'),
+			cert_password: process.env.WIN_CERTIFICATE_PASSWORD,
 			overwrite: true
 		}, err => {
 			if (err) {
@@ -68,6 +71,22 @@ function createInstaller(app) {
 			}
 
 			resolve(extend(app, {dir: out}));
+		});
+	});
+}
+
+function makePath(fileName) {
+	return path.resolve(__dirname, fileName);
+}
+
+function getAssets(app) {
+	return new Promise((resolve, reject) => {
+		fs.readdir(app.dir, (err, files) => {
+			if (err) {
+				return reject(err)
+			}
+
+			resolve(files.map(file => path.resolve(app.dir, file)));
 		});
 	});
 }

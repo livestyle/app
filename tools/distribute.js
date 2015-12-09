@@ -10,7 +10,6 @@ var extend = require('xtend');
 var mkdirp = require('mkdirp');
 var debug = require('debug')('lsapp:distribute');
 var pkg = require('../package.json');
-var zip = require('./branding/zip');
 var brand = {
 	'darwin': require('./branding/osx'),
 	'win32': require('./branding/win')
@@ -58,8 +57,7 @@ module.exports = function(platform) {
 	return copyApp(app)
 	.then(clean)
 	.then(copyResources)
-	.then(brand[platform])
-	.then(pack);
+	.then(brand[platform]);
 };
 
 function getPlatform() {
@@ -124,28 +122,9 @@ function copyResources(app) {
 	});
 }
 
-function pack(app) {
-	var dest = null;
-	switch (app.platform) {
-		case 'darwin':
-			dest = `livestyle-osx.zip`;
-			break;
-		case 'win32':
-			dest = `livestyle-win32.zip`;
-			break;
-		case 'linux':
-			dest = `livestyle-linux.zip`;
-			break;
-	}
-
-	dest = path.resolve(dest);
-	debug('packing app into %s', dest);
-	return zip(app, dest);
-}
-
 if (require.main === module) {
-	module.exports().then(function(archive) {
-		console.log(archive);
+	module.exports().then(function(assets) {
+		console.log(assets);
 	}, function(err) {
 		console.error(err.stack ? err.stack : err);
 		process.exit(1);
