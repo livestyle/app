@@ -9,6 +9,9 @@ var bundle = require('./distribute');
 var publish = require('./release');
 var pkg = require('../package.json');
 
+var repo = parseUrl(pkg.repository.url).pathname.slice(1).replace(/\.git$/, '');
+var release = 'v' + pkg.version;
+
 console.log('Packing and publishing app for %s platform (v%s)', process.platform, pkg.version);
 
 bundle()

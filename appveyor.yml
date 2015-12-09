@@ -24,7 +24,7 @@ test_script:
   - npm run publish
 
 artifacts:
-  - path: livestyle-win32.zip
+  - path: dist\win32\installer
 
 # Don't actually build.
 build: off
