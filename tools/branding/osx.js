@@ -6,7 +6,7 @@ var cpy = require('cpy');
 var parseUrl = require('url').parse;
 var debug = require('debug')('lsapp:distribute:osx');
 var cmd = require('./cmd');
-var pkg = require('../../package.json');
+var info = require('../release-info');
 
 module.exports = function(app) {
 	return updateMainApp(app)
@@ -139,12 +139,10 @@ function pack(app) {
 function autoUpdate(assets) {
 	// create file with auto-update
 	debug('create auto-update file for assets');
-	
+
 	if (!Array.isArray(assets)) {
 		assets = [assets];
 	}
-	var repo = parseUrl(pkg.repository.url).pathname.slice(1).replace(/\.git$/, '');
-	var release = 'v' + pkg.version;
 	var reAppPackage = /\.zip$/;
 	let appPackage = assets.reduce((prev, cur) => reAppPackage.test(cur) ? cur : prev, null);
 	if (!appPackage) {
@@ -153,7 +151,7 @@ function autoUpdate(assets) {
 
 	return new Promise((resolve, reject) => {
 		var contents = JSON.stringify({
-			url: `https://github.com/${repo}/releases/download/${release}/${path.basename(appPackage)}`
+			url: `https://github.com/${info.repo}/releases/download/${info.release}/${path.basename(appPackage)}`
 		});
 
 		var updateFile = path.join(path.dirname(appPackage), 'osx-auto-update.json');
