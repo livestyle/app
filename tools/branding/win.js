@@ -12,6 +12,7 @@ var pkg = require('../../package.json');
 const EXE = 'electron.exe';
 const certificatePath = makePath('../windows/livestyle.pfx');
 const certificatePassword = process.env.WIN_CERTIFICATE_PASSWORD;
+const certificateTimestamp = 'http://timestamp.comodoca.com/authenticode';
 
 module.exports = function(app) {
 	return editResources(app)
@@ -66,8 +67,7 @@ function createInstaller(app) {
 			setup_icon: makePath('icon/livestyle.ico'),
 			exe: app.exe,
 			out,
-			cert_path: certificatePath,
-			cert_password: certificatePassword,
+			sign_with_params: `/a /f "${certificatePath}" /p "${certificatePassword}" /d "${app.productName}" /du "${app.url}" /t "${certificateTimestamp}"`,
 			overwrite: true
 		}, err => {
 			if (err) {
@@ -86,7 +86,7 @@ function codesign(app) {
 			'/p', certificatePassword,
 			'/d', app.productName,
 			'/du', app.url,
-			'/t', 'http://timestamp.comodoca.com/authenticode',
+			'/t', certificateTimestamp,
 			path.resolve(app.dir, app.exe)
 		], function(err, stdout, stderr) {
 			stdout && console.log(stdout);
