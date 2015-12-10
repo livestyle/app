@@ -26,4 +26,4 @@ after_script:
 - security delete-keychain osx-build.keychain
 branches:
   only:
-  - master
+  - release

@@ -11,7 +11,7 @@ platform:
 
 branches:
   only:
-    - autoupdate
+    - release
 
 # Install scripts. (runs after repo cloning)
 install:
