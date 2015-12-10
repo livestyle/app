@@ -42,6 +42,7 @@ module.exports = function(platform) {
 	var app = {
 		id: 'io.livestyle.app',
 		name: 'LiveStyle',
+		url: 'http://livestyle.io',
 		platform,
 		productName: 'Emmet LiveStyle',
 		companyName: 'Emmet.io',

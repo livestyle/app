@@ -2,6 +2,7 @@
 
 var fs = require('graceful-fs');
 var path = require('path');
+var cp = require('child_process');
 var rcedit = require('rcedit');
 var extend = require('xtend');
 var debug = require('debug')('lsapp:distribute:win');
@@ -9,10 +10,13 @@ var installer = require('electron-installer-squirrel-windows');
 var pkg = require('../../package.json');
 
 const EXE = 'electron.exe';
+const certificatePath = makePath('../windows/livestyle.pfx');
+const certificatePassword = process.env.WIN_CERTIFICATE_PASSWORD;
 
 module.exports = function(app) {
 	return editResources(app)
 	.then(renameExecutable)
+	.then(codesign)
 	.then(createInstaller)
 	.then(getAssets);
 };
@@ -45,7 +49,7 @@ function renameExecutable(app) {
 	return new Promise(function(resolve, reject) {
 		var newName = app.name.toLowerCase() + path.extname(EXE);
 		fs.rename(path.join(app.dir, EXE), path.join(app.dir, newName), function(err) {
-			err ? reject(err) : resolve(app);
+			err ? reject(err) : resolve(extend(app, {exe: newName}));
 		});
 	});
 }
@@ -60,10 +64,10 @@ function createInstaller(app) {
 			authors: pkg.author,
 			loading_gif: makePath('resources/install-spinner.gif'),
 			setup_icon: makePath('icon/livestyle.ico'),
-			exe: 'livestyle.exe',
+			exe: app.exe,
 			out,
-			cert_path: makePath('../windows/livestyle.pfx'),
-			cert_password: process.env.WIN_CERTIFICATE_PASSWORD,
+			cert_path: certificatePath,
+			cert_password: certificatePassword,
 			overwrite: true
 		}, err => {
 			if (err) {
@@ -71,6 +75,23 @@ function createInstaller(app) {
 			}
 
 			resolve(extend(app, {dir: out}));
+		});
+	});
+}
+
+function codesign(app) {
+	return new Promise((resolve, reject) => {
+		cp.execFile(process.env.SIGN_TOOL, ['sign', 
+			'/f', certificatePath,
+			'/p', certificatePassword,
+			'/d', app.productName,
+			'/du', app.url,
+			'/t', 'http://timestamp.comodoca.com/authenticode',
+			path.resolve(app.dir, app.exe)
+		], function(err, stdout, stderr) {
+			stdout && console.log(stdout);
+			stderr && console.log(stderr);
+			err ? reject(err) : resolve(app)
 		});
 	});
 }

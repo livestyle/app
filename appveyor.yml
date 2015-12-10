@@ -1,6 +1,7 @@
 # Test against this version of Node.js
 environment:
   nodejs_version: "4.1.1"
+  SIGN_TOOL: 'C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Bin\signtool.exe'
   PUBLISH_TOKEN:
     secure: w/pAoJMD7xgxclssGbzQOfgs81EQyiAfkRJMeH6e6bPiJXyUHtr403v9z10zb4GZ
   WIN_CERTIFICATE_PASSWORD:
@@ -11,7 +12,7 @@ platform:
 
 branches:
   only:
-    - release
+    - master
 
 # Install scripts. (runs after repo cloning)
 install:
