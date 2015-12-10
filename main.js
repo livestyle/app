@@ -17,6 +17,7 @@ if (require('electron-squirrel-startup')) {
 
 var ipc = electron.ipcMain;
 var BrowserWindow = electron.BrowserWindow;
+const startAutoupdateTimeout = 20 * 1000;  // when to start auto-update polling
 
 // XXX init
 require('electron-debug')();
@@ -41,11 +42,7 @@ var app = menubar({
 		setupAppEvents(self.app, controller);
 		initialWindowDisplay(app);
 
-		autoUpdate(pkg);
-		electron.autoUpdater
-		.on('update-available', () => appModel.set('updateAvailable', true))
-		.on('update-not-available', () => appModel.set('updateAvailable', false))
-		.on('error', error);
+		setupAutoUpdate(appModel);
 	});
 })
 .on('show', () => updateMainWindow(appModel))
@@ -72,6 +69,15 @@ function setupAppEvents(app, controller) {
 	.on('install-update', () => electron.autoUpdater.quitAndInstall())
 	.on('rv-close-session', (event, key) => backend.closeRvSession(key))
 	.on('quit', () => app && app.quit());
+}
+
+function setupAutoUpdate(model) {
+	setTimeout(() => {
+		autoUpdate(pkg)
+		.on('update-downloaded', () => model.set('updateAvailable', true))
+		.on('update-not-available', () => model.set('updateAvailable', false))
+		.on('error', error);
+	}, startAutoupdateTimeout).unref();
 }
 
 function toArray(obj) {

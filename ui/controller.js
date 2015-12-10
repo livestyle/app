@@ -23,6 +23,10 @@ function init() {
 		stRender(model.sublimeTextPlugin);
 		rvRender(model.rvSessions);
 		updateBtn.classList.toggle('hidden', !model.updateAvailable);
+
+		if (model.updateAvailable) {
+			notifyUpdateAvailable();
+		}
 	})
 	.on('log', function(event, args) {
 		console.log.apply(console, args);
@@ -58,6 +62,19 @@ function init() {
 			shell.openExternal(a.href);
 		}
 	});
+}
+
+var _didNotifiedUpdateAvailable = false;
+function notifyUpdateAvailable() {
+	if (_didNotifiedUpdateAvailable) {
+		return;
+	}
+
+	_didNotifiedUpdateAvailable = true;
+	var n = new Notification('LiveStyle', {
+		body: 'A new version of LiveStyle app is available, click to install'
+	});
+	n.onclick = () => ipc.send('install-update');
 }
 
 init();
