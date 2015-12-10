@@ -178,7 +178,7 @@ i.quit::before {
 .extension-message {
 	padding: 5px 0;
 	line-height: 1.4;
-	font-size: 1.1em;
+	font-size: 0.9em;
 	color: #999;
 	display: none;
 }
