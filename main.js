@@ -25,7 +25,7 @@ var app = menubar({
 	width: 380,
 	height: 360,
 	resizable: false,
-	icon: path.resolve(__dirname, `assets/${process.platform === 'win32' ? 'win-menu-icon.png' : 'menu-icon.png'}`)
+	icon: path.resolve(__dirname, `assets/${process.platform === 'win32' ? 'menu-icon.ico' : 'menu-icon.png'}`)
 })
 .on('ready', function() {
 	var self = this;
@@ -40,11 +40,12 @@ var app = menubar({
 		updateMainWindow(appModel);
 		setupAppEvents(self.app, controller);
 		initialWindowDisplay(app);
-		autoUpdate(pkg);
 
+		autoUpdate(pkg);
 		electron.autoUpdater
 		.on('update-available', () => appModel.set('updateAvailable', true))
-		.on('update-not-available', () => appModel.set('updateAvailable', false));
+		.on('update-not-available', () => appModel.set('updateAvailable', false))
+		.on('error', error);
 	});
 })
 .on('show', () => updateMainWindow(appModel))
