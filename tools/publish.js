@@ -9,7 +9,7 @@ var bundle = require('./distribute');
 var publish = require('./release');
 var info = require('./release-info');
 
-console.log('Packing and publishing app for %s platform (v%s)', process.platform, info.release);
+console.log('Packing and publishing app for %s platform (%s)', process.platform, info.release);
 
 bundle()
 .then(assets => {

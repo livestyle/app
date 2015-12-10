@@ -62,6 +62,7 @@ function createInstaller(app) {
 			setup_icon: makePath('icon/livestyle.ico'),
 			exe: 'livestyle.exe',
 			out,
+			setup_icon: app.setupIcon,
 			cert_path: makePath('../windows/livestyle.pfx'),
 			cert_password: process.env.WIN_CERTIFICATE_PASSWORD,
 			overwrite: true

@@ -51,7 +51,8 @@ module.exports = function(platform) {
 		dir: appDir[platform],
 		resDir: resDir[platform],
 		appDirName: isOSX ? 'LiveStyle.app' : 'livestyle',
-		version: pkg.version
+		version: pkg.version,
+		setupIcon: 'http://livestyle.io/i/livestyle.ico'
 	};
 
 	return copyApp(app)
