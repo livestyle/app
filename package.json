@@ -38,6 +38,7 @@
     "xtend": "^4.0.0"
   },
   "devDependencies": {
+    "connect": "^3.4.0",
     "cpy": "^3.4.0",
     "del": "^2.0.0",
     "electron-installer-squirrel-windows": "^1.2.2",
@@ -46,6 +47,7 @@
     "mocha": "^2.2.5",
     "ncp": "^2.0.0",
     "rcedit": "^0.3.0",
+    "serve-static": "^1.10.0",
     "yazl": "^2.2.2"
   },
   "config": {

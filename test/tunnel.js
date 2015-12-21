@@ -18,10 +18,10 @@ describe('Tunnel Cluster controller', function() {
 		.on('update', function(list) {
 			updates.push(list);
 		})
-		.on('clusterCreate', function(cluster) {
+		.once('clusterCreate', function(cluster) {
 			clusterCreated = true;
 		})
-		.on('clusterDestroy', function(cluster) {
+		.once('clusterDestroy', function(cluster) {
 			setTimeout(function() {
 				assert(clusterCreated);
 				assert.equal(updates.length, 2);
