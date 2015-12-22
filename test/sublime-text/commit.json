@@ -1,0 +1,112 @@
+{
+    "author": {
+        "avatar_url": "https://avatars.githubusercontent.com/u/93595?v=3",
+        "events_url": "https://api.github.com/users/sergeche/events{/privacy}",
+        "followers_url": "https://api.github.com/users/sergeche/followers",
+        "following_url": "https://api.github.com/users/sergeche/following{/other_user}",
+        "gists_url": "https://api.github.com/users/sergeche/gists{/gist_id}",
+        "gravatar_id": "",
+        "html_url": "https://github.com/sergeche",
+        "id": 93595,
+        "login": "sergeche",
+        "organizations_url": "https://api.github.com/users/sergeche/orgs",
+        "received_events_url": "https://api.github.com/users/sergeche/received_events",
+        "repos_url": "https://api.github.com/users/sergeche/repos",
+        "site_admin": false,
+        "starred_url": "https://api.github.com/users/sergeche/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/sergeche/subscriptions",
+        "type": "User",
+        "url": "https://api.github.com/users/sergeche"
+    },
+    "comments_url": "https://api.github.com/repos/livestyle/sublime-text/commits/58e94a3a3cbfe889450dac92c4450527b40410ff/comments",
+    "commit": {
+        "author": {
+            "date": "2015-11-16T22:21:38Z",
+            "email": "serge.che@gmail.com",
+            "name": "Sergey Chikuyonok"
+        },
+        "comment_count": 0,
+        "committer": {
+            "date": "2015-11-16T22:21:38Z",
+            "email": "serge.che@gmail.com",
+            "name": "Sergey Chikuyonok"
+        },
+        "message": "Fixed regression with ST2 support",
+        "tree": {
+            "sha": "4e056fd7d2b5012ef7293262005a12f0806e78a3",
+            "url": "https://api.github.com/repos/livestyle/sublime-text/git/trees/4e056fd7d2b5012ef7293262005a12f0806e78a3"
+        },
+        "url": "https://api.github.com/repos/livestyle/sublime-text/git/commits/58e94a3a3cbfe889450dac92c4450527b40410ff"
+    },
+    "committer": {
+        "avatar_url": "https://avatars.githubusercontent.com/u/93595?v=3",
+        "events_url": "https://api.github.com/users/sergeche/events{/privacy}",
+        "followers_url": "https://api.github.com/users/sergeche/followers",
+        "following_url": "https://api.github.com/users/sergeche/following{/other_user}",
+        "gists_url": "https://api.github.com/users/sergeche/gists{/gist_id}",
+        "gravatar_id": "",
+        "html_url": "https://github.com/sergeche",
+        "id": 93595,
+        "login": "sergeche",
+        "organizations_url": "https://api.github.com/users/sergeche/orgs",
+        "received_events_url": "https://api.github.com/users/sergeche/received_events",
+        "repos_url": "https://api.github.com/users/sergeche/repos",
+        "site_admin": false,
+        "starred_url": "https://api.github.com/users/sergeche/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/sergeche/subscriptions",
+        "type": "User",
+        "url": "https://api.github.com/users/sergeche"
+    },
+    "files": [
+        {
+            "additions": 4,
+            "blob_url": "https://github.com/livestyle/sublime-text/blob/58e94a3a3cbfe889450dac92c4450527b40410ff/livestyle-plugin.py",
+            "changes": 8,
+            "contents_url": "https://api.github.com/repos/livestyle/sublime-text/contents/livestyle-plugin.py?ref=58e94a3a3cbfe889450dac92c4450527b40410ff",
+            "deletions": 4,
+            "filename": "livestyle-plugin.py",
+            "patch": "@@ -31,7 +31,7 @@\n sublime_ver = int(sublime.version()[0])\n conn_attempts = 0\n max_conn_attempts = 10\n-ls_server_port = 54000\n+ls_server_port = int(editor_utils.get_setting('port') or 54000)\n \n #############################\n # Editor\n@@ -171,11 +171,11 @@ def on_client_close():\n \n @gen.coroutine\n def client_connect():\n-\tport = editor_utils.get_setting('port', ls_server_port)\n+\tport = ls_server_port\n \ttry:\n \t\tyield client.connect(port=port)\n \t\tlogger.info('Editor client connected')\n-\texcept OSError as e:\n+\texcept Exception as e:\n \t\tlogger.info('Client connection error: %s' % e)\n \t\t# In most cases this exception means there's no\n \t\t# LiveStyle server running. Create our own one\n@@ -186,7 +186,7 @@ def create_server(port):\n \t# Due to concurrency, it is possible that LiveStyle server\n \t# is already running when we call this function\n \ttry:\n-\t\tlogger.info('Create own server')\n+\t\tlogger.info('Create own server on port %d' % port)\n \t\tserver.start(port=port)\n \texcept OSError as e:\n \t\tif e.errno != 48:",
+            "raw_url": "https://github.com/livestyle/sublime-text/raw/58e94a3a3cbfe889450dac92c4450527b40410ff/livestyle-plugin.py",
+            "sha": "a7adf1db4549a1f37f7e58ef6a30e5b50f46e634",
+            "status": "modified"
+        },
+        {
+            "additions": 12,
+            "blob_url": "https://github.com/livestyle/sublime-text/blob/58e94a3a3cbfe889450dac92c4450527b40410ff/livestyle/client.py",
+            "changes": 16,
+            "contents_url": "https://api.github.com/repos/livestyle/sublime-text/contents/livestyle/client.py?ref=58e94a3a3cbfe889450dac92c4450527b40410ff",
+            "deletions": 4,
+            "filename": "livestyle/client.py",
+            "patch": "@@ -23,6 +23,10 @@\n \t'queue': []\n }\n \n+def main_thread(fn):\n+\t\"Run function in main thread\"\n+\treturn lambda *args, **kwargs: sublime.set_timeout(lambda: fn(*args, **kwargs), 1)\n+\n @gen.coroutine\n def connect(host='ws://127.0.0.1', port=54000, endpoint='/livestyle'):\n \t\"Connects to LiveStyle server\"\n@@ -35,7 +39,7 @@ def connect(host='ws://127.0.0.1', port=54000, endpoint='/livestyle'):\n \turl = '%s:%d%s' % (host, port, endpoint)\n \tsock = yield tornado.websocket.websocket_connect(url)\n \n-\tdispatcher.emit('open')\n+\t_emit('open')\n \t_reset_queue()\n \tlogger.debug('Connected to server at %s' % url)\n \n@@ -45,7 +49,7 @@ def connect(host='ws://127.0.0.1', port=54000, endpoint='/livestyle'):\n \t\t\tsock = None\n \t\t\tlogger.debug('Disconnected from server')\n \t\t\t_reset_queue()\n-\t\t\tdispatcher.emit('close')\n+\t\t\t_emit('close')\n \t\t\treturn\n \t\t_handle_message(msg)\n \n@@ -61,7 +65,7 @@ def send(name, data=None):\n def _handle_message(message):\n \tpayload = json.loads(message)\n \tlogger.debug('Received message \"%s\"' % payload['name'])\n-\tdispatcher.emit(payload['name'], payload.get('data'))\n+\t_emit(payload['name'], payload.get('data'))\n \n def on(name, callback=None):\n \tif callback is None: # using as decorator\n@@ -76,6 +80,10 @@ def once(name, callback=None):\n \t\treturn lambda f: dispatcher.once(name, f)\n \tdispatcher.once(name, callback)\n \n+@main_thread\n+def _emit(name, payload=None):\n+\tdispatcher.emit(name, payload)\n+\n # Message queuing\n \n def _next_in_queue():\n@@ -110,4 +118,4 @@ def _on_message_sent(f=None):\n \n def _reset_queue():\n \t_state['locked'] = False\n-\t_state['queue'].clear()\n+\t_state['queue'][:] = [] # instead of .clear(), unsupported in 2.6\n\\ No newline at end of file",
+            "raw_url": "https://github.com/livestyle/sublime-text/raw/58e94a3a3cbfe889450dac92c4450527b40410ff/livestyle/client.py",
+            "sha": "f48259ba18ae0a737ed66908b8f2fc086c1e0eb2",
+            "status": "modified"
+        },
+        {
+            "additions": 0,
+            "blob_url": "https://github.com/livestyle/sublime-text/blob/58e94a3a3cbfe889450dac92c4450527b40410ff/tornado.zip",
+            "changes": 0,
+            "contents_url": "https://api.github.com/repos/livestyle/sublime-text/contents/tornado.zip?ref=58e94a3a3cbfe889450dac92c4450527b40410ff",
+            "deletions": 0,
+            "filename": "tornado.zip",
+            "raw_url": "https://github.com/livestyle/sublime-text/raw/58e94a3a3cbfe889450dac92c4450527b40410ff/tornado.zip",
+            "sha": "78acacc0d05ce2efee81e919b2bd26be462cad2e",
+            "status": "modified"
+        }
+    ],
+    "html_url": "https://github.com/livestyle/sublime-text/commit/58e94a3a3cbfe889450dac92c4450527b40410ff",
+    "parents": [
+        {
+            "html_url": "https://github.com/livestyle/sublime-text/commit/db25df437293a20e20bfcf37c5a78d6430b9dced",
+            "sha": "db25df437293a20e20bfcf37c5a78d6430b9dced",
+            "url": "https://api.github.com/repos/livestyle/sublime-text/commits/db25df437293a20e20bfcf37c5a78d6430b9dced"
+        }
+    ],
+    "sha": "58e94a3a3cbfe889450dac92c4450527b40410ff",
+    "stats": {
+        "additions": 16,
+        "deletions": 8,
+        "total": 24
+    },
+    "url": "https://api.github.com/repos/livestyle/sublime-text/commits/58e94a3a3cbfe889450dac92c4450527b40410ff"
+}
