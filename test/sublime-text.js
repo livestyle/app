@@ -11,6 +11,7 @@ const connect = require('connect');
 const serveStatic = require('serve-static');
 const detect = require('../lib/sublime-text/detect');
 const install = require('../lib/sublime-text/install');
+const autoupdate = require('../lib/sublime-text/autoupdate');
 
 describe('Sublime Text', () => {
 	let dir = d => path.resolve(__dirname, d);
@@ -103,7 +104,7 @@ describe('Sublime Text', () => {
 
 		after(done => server.close(done));
 
-		it.only('install (with auto-update)', done => {
+		it('install (with auto-update)', done => {
 			let app = {
 				downloadUrl: `${host}/plugin.zip`,
 				commitUrl: `${host}/commit.json`,
@@ -114,12 +115,85 @@ describe('Sublime Text', () => {
 			install(app)
 			.then(result => {
 				assert(result);
-				assert.equal(path.dirname(result), 'LiveStyle');
+				assert.equal(path.basename(result), 'LiveStyle');
 				assert(read(out('Livestyle/livestyle.py')));
-				assert.equal(readJSON(out('Livestyle/autoupdate.json')).commit, readJSON('sublime-text/commit.json').sha);
+				assert.equal(readJSON(out('Livestyle/autoupdate.json')).sha, readJSON('sublime-text/commit.json').sha);
 				done();
 			})
 			.catch(done);
-		})
+		});
+
+		it('install (without auto-update)', done => {
+			let app = {
+				downloadUrl: `${host}/plugin.zip`,
+				install: dir('sublime-text/out/install-auto-update')
+			};
+			let out = p => path.resolve(app.install, p);
+
+			install(app)
+			.then(result => {
+				assert(result);
+				assert.equal(path.basename(result), 'LiveStyle');
+				assert(read(out('Livestyle/livestyle.py')));
+				assert.throws(() => read(out('Livestyle/autoupdate.json')), /ENOENT/);
+				done();
+			})
+			.catch(done);
+		});
+	});
+
+	describe('auto-update', () => {
+		const port = 8888;
+		const host = `http://localhost:${port}`;
+		var server;
+		before(done => {
+			let app = connect().use(serveStatic(dir('sublime-text')));
+			server = http.createServer(app);
+			server.listen(port, done);
+		});
+
+		after(done => server.close(done));
+
+		it('should trigger', done => {
+			let app = {
+				downloadUrl: `${host}/plugin.zip`,
+				commitUrl: `${host}/commit.json`,
+				install: dir('sublime-text/out/install-auto-update')
+			};
+			let out = p => path.resolve(app.install, p);
+
+			install(app)
+			.then(() => {
+				let updater = autoupdate(app);
+				let eventEmitted = false;
+				return updater.check()
+				.then(result => {
+					// sha’s are equal, update file and try again
+					assert.equal(result, false);
+					updater.on('shouldUpdate', () => eventEmitted = true);
+					fs.writeFileSync(out('Livestyle/autoupdate.json'), '{"sha":"foo"}');
+					return updater.check();
+				})
+				.then(result => {
+					assert.equal(result, true);
+					assert.equal(eventEmitted, true);
+					done();
+				});
+			})
+			.catch(done);
+		});
+
+		it('should not trigger', done => {
+			let app = {
+				downloadUrl: `${host}/plugin.zip`,
+				install: dir('sublime-text/out/install-auto-update')
+			};
+			let out = p => path.resolve(app.install, p);
+
+			install(app)
+			.then(() => autoupdate(app).check())
+			.then(result => done(new Error('Should fail')))
+			.catch(err => done());
+		});
 	});
 });
