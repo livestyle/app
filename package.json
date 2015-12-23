@@ -44,7 +44,7 @@
     "cpy": "^3.4.0",
     "del": "^2.0.0",
     "electron-installer-squirrel-windows": "^1.2.2",
-    "electron-prebuilt": "^0.35.0",
+    "electron-prebuilt": "~0.35.0",
     "glob-all": "^3.0.1",
     "mocha": "^2.2.5",
     "ncp": "^2.0.0",
