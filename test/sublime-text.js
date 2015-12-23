@@ -9,9 +9,7 @@ const http = require('http');
 const assert = require('assert');
 const connect = require('connect');
 const serveStatic = require('serve-static');
-const detect = require('../lib/sublime-text/detect');
-const install = require('../lib/sublime-text/install');
-const autoupdate = require('../lib/sublime-text/autoupdate');
+const st = require('../lib/sublime-text');
 
 describe('Sublime Text', () => {
 	let dir = d => path.resolve(__dirname, d);
@@ -20,7 +18,7 @@ describe('Sublime Text', () => {
 
 	describe('detect app', () => {
 		it('does not exists', done => {
-			detect.app({lookup: dir('sublime-text/dir1/LiveStyle/livestyle.exe')})
+			st.detect.app({lookup: dir('sublime-text/dir1/LiveStyle/livestyle.exe')})
 			.then(() => done(new Error('Should fail')))
 			.catch(err => {
 				assert.equal(err.code, 'ENOSUBLIMETEXT');
@@ -29,7 +27,7 @@ describe('Sublime Text', () => {
 		});
 
 		it('exists (single path)', done => {
-			detect.app({lookup: dir('sublime-text/dir2/LiveStyle/livestyle.exe')})
+			st.detect.app({lookup: dir('sublime-text/dir2/LiveStyle/livestyle.exe')})
 			.then(appPath => {
 				assert.equal(path.basename(appPath), 'livestyle.exe');
 				done();
@@ -38,7 +36,7 @@ describe('Sublime Text', () => {
 		});
 
 		it('exists (multiple paths)', done => {
-			detect.app({lookup: [
+			st.detect.app({lookup: [
 				dir('sublime-text/dir1/LiveStyle/livestyle.exe'),
 				dir('sublime-text/dir2/LiveStyle/livestyle.exe')
 			]})
@@ -54,7 +52,7 @@ describe('Sublime Text', () => {
 	describe('detect plugin', () => {
 		let extensionId = ['LiveStyle', 'LiveStyle.sublime-package'];
 		it('not exists', done => {
-			detect.plugin({
+			st.detect.plugin({
 				install: dir('sublime-text/dir1/Packages'),
 				extensionId
 			})
@@ -66,7 +64,7 @@ describe('Sublime Text', () => {
 		});
 
 		it('exists (unpacked)', done => {
-			detect.plugin({
+			st.detect.plugin({
 				install: dir('sublime-text/dir2/Packages'),
 				extensionId
 			})
@@ -79,7 +77,7 @@ describe('Sublime Text', () => {
 		});
 
 		it('exists (packed)', done => {
-			detect.plugin({
+			st.detect.plugin({
 				install: dir('sublime-text/dir3/Packages'),
 				extensionId
 			})
@@ -112,7 +110,7 @@ describe('Sublime Text', () => {
 			};
 			let out = p => path.resolve(app.install, p);
 
-			install(app)
+			st.install(app)
 			.then(result => {
 				assert(result);
 				assert.equal(path.basename(result), 'LiveStyle');
@@ -130,7 +128,7 @@ describe('Sublime Text', () => {
 			};
 			let out = p => path.resolve(app.install, p);
 
-			install(app)
+			st.install(app)
 			.then(result => {
 				assert(result);
 				assert.equal(path.basename(result), 'LiveStyle');
@@ -162,9 +160,9 @@ describe('Sublime Text', () => {
 			};
 			let out = p => path.resolve(app.install, p);
 
-			install(app)
+			st.install(app)
 			.then(() => {
-				let updater = autoupdate(app);
+				let updater = st.autoupdate(app);
 				let eventEmitted = false;
 				return updater.check()
 				.then(result => {
@@ -190,8 +188,8 @@ describe('Sublime Text', () => {
 			};
 			let out = p => path.resolve(app.install, p);
 
-			install(app)
-			.then(() => autoupdate(app).check())
+			st.install(app)
+			.then(() => st.autoupdate(app).check())
 			.then(result => done(new Error('Should fail')))
 			.catch(err => done());
 		});
