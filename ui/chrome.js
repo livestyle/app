@@ -9,10 +9,11 @@ var $ = require('./utils').qs;
 
 module.exports = function(elem) {
 	$('.extension-install-btn', elem).addEventListener('click', function() {
-		ipc.send('install-chrome');
+		ipc.send('install-plugin', 'chrome');
 	});
 
-	return function render(attr) {
+	return function render(model) {
+		var attr = model.chrome;
 		if (attr == null) {
 			// unknown state: currently checking if plugin is installed
 			$('.extension-progress__message', elem).innerText = 'Checking status';

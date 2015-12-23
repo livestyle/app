@@ -6,22 +6,22 @@
 var ipc = require('electron').ipcRenderer;
 var shell = require('electron').shell;
 var chrome = require('./chrome');
-var st = require('./sublime-text');
+var sublimeText = require('./sublime-text');
 var rv = require('./rv-sessions');
 var $ = require('./utils').qs;
 var closest = require('./utils').closest;
-var apps = require('../lib/apps.json');
+var apps = require('../lib/apps');
 
 function init() {
 	var chromeRender = chrome($('.extension-item[data-extension-id=chrome]'));
-	var stRender = st($('.extension-item[data-extension-id=st]'));
+	var sublimeTextRender = sublimeText($('.extension-item[data-extension-id=st]'));
 	var rvRender = rv($('.rv-pane'));
 	var updateBtn = $('.update-available');
 
 	ipc.on('model', function(event, model) {
-		chromeRender(model.chromePlugin);
-		stRender(model.sublimeTextPlugin);
-		rvRender(model.rvSessions);
+		chromeRender(model);
+		sublimeTextRender(model);
+		rvRender(model);
 		updateBtn.classList.toggle('hidden', !model.updateAvailable);
 
 		if (model.updateAvailable) {

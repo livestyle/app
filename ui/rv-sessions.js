@@ -18,8 +18,8 @@ module.exports = function(elem) {
 		}
 	});
 
-	return function render(sessionList) {
-		sessionList = sessionList || [];
+	return function render(model) {
+		var sessionList = sessionList.sessionList || [];
 		console.log('update with list', sessionList);
 
 		elem.classList.toggle('rv-pane_disabled', !sessionList.length);

@@ -1,6 +1,9 @@
 /**
  * A module for rendering Sublime Text plugin state: returns a function
- * that can takes model attribute and updates given view accordingly
+ * that can takes model attribute and updates given view accordingly.
+ *
+ * This UI component actually works with two apps: Sublime Text 2 
+ * and Sublime Text 3
  */
 'use strict';
 
@@ -9,12 +12,16 @@ var $ = require('./utils').qs;
 
 module.exports = function(elem) {
 	$('.extension-install-btn', elem).addEventListener('click', function() {
-		ipc.send('install-sublime-text', this.dataset.installVersion);
+		(this.dataset.installVersion || '').split(',')
+		.filter(Boolean)
+		.forEach(version => ipc.send('install-plugin', version))
 		$('.extension-progress__message', elem).innerText = 'Installing';
 		elem.dataset.extensionState = 'progress';
 	});
 
-	return function render(attr) {
+	return function render(model) {
+		var attr = model.st2;
+		
 		if (attr == null) {
 			// unknown state: currently checking if plugin is installed
 			$('.extension-progress__message', elem).innerText = 'Checking status';
