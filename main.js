@@ -1,22 +1,22 @@
 'use strict';
 
-var path = require('path');
-var menubar = require('menubar')
-var electron = require('electron');
-var debug = require('debug')('lsapp:main');
-var backend = require('./backend');
-var Model = require('./lib/model');
-var appModelController = require('./lib/controller/app-model');
-var connect = require('./lib/client');
-var autoUpdate = require('./lib/autoupdate');
-var pkg = require('./package.json');
+const path = require('path');
+const menubar = require('menubar')
+const electron = require('electron');
+const debug = require('debug')('lsapp:main');
+const backend = require('./backend');
+const Model = require('./lib/model');
+const appModelController = require('./lib/controller/app-model');
+const connect = require('./lib/client');
+const autoUpdate = require('./lib/autoupdate');
+const pkg = require('./package.json');
 
 if (require('electron-squirrel-startup')) {
 	return;
 }
 
-var ipc = electron.ipcMain;
-var BrowserWindow = electron.BrowserWindow;
+const ipc = electron.ipcMain;
+const BrowserWindow = electron.BrowserWindow;
 const startAutoupdateTimeout = 20 * 1000;  // when to start auto-update polling
 
 // XXX init
@@ -29,17 +29,20 @@ var app = menubar({
 	icon: path.resolve(__dirname, `assets/${process.platform === 'win32' ? 'menu-icon.ico' : 'menu-icon.png'}`)
 })
 .on('ready', function() {
-	var self = this;
-	connect(pkg.config.websocketUrl, function(err, client) {
+	connect(pkg.config.websocketUrl, (err, client) => {
 		if (err) {
 			return error(err);
 		}
 
 		info('Client connected');
+		
+		// supress 'error' event since in Node.js, in most cases it means unhandled exception
+		client.on('error', err => console.error(err));
+
 		var controller = appModelController(appModel, client);
 		backend(client);
 		updateMainWindow(appModel);
-		setupAppEvents(self.app, controller);
+		setupAppEvents(app, controller);
 		initialWindowDisplay(app);
 
 		setupAutoUpdate(appModel);
@@ -58,13 +61,9 @@ appModel.on('change', function() {
 ////////////////////////////////////
 
 function setupAppEvents(app, controller) {
-	ipc.on('install-chrome', function() {
-		log('install Chrome extension');
-		controller.installChrome().catch(error);
-	})
-	.on('install-sublime-text', function(event, versions) {
-		log('install Sublime Text extension');
-		controller.installSublimeText(versions).catch(error);
+	ipc.on('install-plugin', function(event, id) {
+		log(`install plugin ${id}`);
+		controller.install(id).catch(error);
 	})
 	.on('install-update', () => electron.autoUpdater.quitAndInstall())
 	.on('rv-close-session', (event, key) => backend.closeRvSession(key))

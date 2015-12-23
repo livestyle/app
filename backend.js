@@ -27,7 +27,7 @@ module.exports = function(client) {
 	.on('rv-get-session-list', function() {
 		var sessions = tunnelController.list()
 		.map(function(session) {
-			// if this is a local server, rewite its localSite to server docroot
+			// if this is a local server, rewrite its localSite to server docroot
 			var localServer = fileServerController.find(session.localSite);
 			if (localServer) {
 				session = extend(session, {localSite: localServer.rv.docroot});
