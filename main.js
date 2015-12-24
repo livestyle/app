@@ -26,6 +26,7 @@ var app = menubar({
 	width: 380,
 	height: 360,
 	resizable: false,
+	'always-on-top': process.argv.indexOf('--on-top') !== -1,
 	icon: path.resolve(__dirname, `assets/${process.platform === 'win32' ? 'menu-icon.ico' : 'menu-icon.png'}`)
 })
 .on('ready', function() {
@@ -67,7 +68,7 @@ function setupAppEvents(app, controller) {
 	})
 	.on('install-update', () => electron.autoUpdater.quitAndInstall())
 	.on('rv-close-session', (event, key) => backend.closeRvSession(key))
-	.on('quit', () => app && app.quit());
+	.on('quit', () => app && app.app && app.app.quit());
 }
 
 function setupAutoUpdate(model) {

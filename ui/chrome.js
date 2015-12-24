@@ -1,49 +1,18 @@
 /**
  * A module for rendering Chrome plugin state: returns a function
- * that can takes model attribute and updates given view accordingly
+ * that can takes model and updates given view accordingly
  */
 'use strict';
 
-var ipc = require('electron').ipcRenderer;
-var $ = require('./utils').qs;
+const ipc = require('electron').ipcRenderer;
+const $ = require('./utils').qs;
+const pluginStatus = require('./plugin-status');
 
 module.exports = function(elem) {
-	$('.extension-install-btn', elem).addEventListener('click', function() {
-		ipc.send('install-plugin', 'chrome');
-	});
+	$('.extension-install-btn', elem)
+	.addEventListener('click', evt => ipc.send('install-plugin', 'chrome'));
 
 	return function render(model) {
-		var attr = model.chrome;
-		if (attr == null) {
-			// unknown state: currently checking if plugin is installed
-			$('.extension-progress__message', elem).innerText = 'Checking status';
-			$('.extension-message', elem).innerText = '';
-			elem.dataset.extensionState = 'progress';
-			return;
-		}
-
-		if (attr === false) {
-			// extension is not installed
-			elem.dataset.extensionState = '';
-			$('.extension-message', elem).innerText = '';
-			return;
-		}
-
-		if (isError(attr)) {
-			// error occurred during plugin installation
-			elem.dataset.extensionState = 'error';
-			$('.extension-message', elem).innerHTML = attr.error;
-			return;
-		}
-
-		if (attr) {
-			// extension is installed
-			elem.dataset.extensionState = 'installed';
-			$('.extension-message', elem).innerText = 'Installed';
-		}
+		pluginStatus.update(elem, model.chrome);
 	};
 };
-
-function isError(attr) {
-	return typeof attr === 'object' && 'error' in attr;
-}
