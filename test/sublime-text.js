@@ -52,16 +52,18 @@ describe('Sublime Text', () => {
 
 	describe('detect plugin', () => {
 		let extensionId = ['LiveStyle', 'LiveStyle.sublime-package'];
-		it('not exists', done => {
+		it('app not installed', done => {
 			st.detect.plugin({
 				install: dir('sublime-text/dir1/Packages'),
 				extensionId
 			})
 			.then(result => {
-				assert.equal(result, false);
-				done();
-			})
-			.catch(done);
+				done(new Error('Should fail'));
+			}, err => {
+				// must throw exception which means app does not exists
+				assert.equal(err.code, 'ENOSUBLIMETEXT');
+				done()
+			});
 		});
 
 		it('exists (unpacked)', done => {
@@ -85,6 +87,18 @@ describe('Sublime Text', () => {
 			.then(result => {
 				assert(result);
 				assert.equal(path.basename(result), 'LiveStyle.sublime-package');
+				done();
+			})
+			.catch(done);
+		});
+
+		it('not exists', done => {
+			st.detect.plugin({
+				install: dir('sublime-text/dir4/Packages'),
+				extensionId
+			})
+			.then(result => {
+				assert.equal(result, false);
 				done();
 			})
 			.catch(done);
