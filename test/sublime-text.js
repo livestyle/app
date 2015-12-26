@@ -155,7 +155,7 @@ describe('Sublime Text', () => {
 		});
 	});
 
-	describe('auto-update', () => {
+	describe('update', () => {
 		const port = 8888;
 		const host = `http://localhost:${port}`;
 		var server;
@@ -207,6 +207,35 @@ describe('Sublime Text', () => {
 			.then(() => st.autoupdate(app).check())
 			.then(result => done(new Error('Should fail')))
 			.catch(err => done());
+		});
+
+		it('periodic check', function(done) {
+			let app = {
+				downloadUrl: `${host}/plugin.zip`,
+				commitUrl: `${host}/commit.json`,
+				install: dir('sublime-text/out/install-auto-update')
+			};
+			let out = p => path.resolve(app.install, p);
+			let checks = 0;
+			this.timeout(6000);
+
+			st.install(app)
+			.then(() => {
+				// update autoupdate file after some time to trigger update
+				setTimeout(() => {
+					fs.writeFileSync(out('Livestyle/autoupdate.json'), '{"sha":"foo"}');
+				}, 5000);
+
+				return st.autoupdate(app)
+				.on('checkForUpdate', () => checks++)
+				.on('shouldUpdate', function() {
+					this.stop();
+					assert(checks > 3 && checks < 10);
+					done();
+				})
+				.start(1);
+			})
+			.catch(done);
 		});
 	});
 
