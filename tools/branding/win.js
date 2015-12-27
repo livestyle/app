@@ -13,13 +13,18 @@ const EXE = 'electron.exe';
 const certificatePath = makePath('../windows/livestyle.pfx');
 const certificatePassword = process.env.WIN_CERTIFICATE_PASSWORD;
 const certificateTimestamp = 'http://timestamp.comodoca.com/authenticode';
+const devMode = process.argv.indexOf('--dev') !== -1;
 
 module.exports = function(app) {
-	return editResources(app)
-	.then(renameExecutable)
-	.then(codesign)
-	.then(createInstaller)
-	.then(getAssets);
+	var p = editResources(app).then(renameExecutable);
+
+	if (!devMode) {
+		p = p.then(codesign)
+		.then(createInstaller)
+		.then(getAssets);
+	}
+
+	return p;
 };
 
 function editResources(app) {

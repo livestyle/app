@@ -8,15 +8,22 @@ var debug = require('debug')('lsapp:distribute:osx');
 var cmd = require('./cmd');
 var info = require('../release-info');
 
+const devMode = process.argv.indexOf('--dev') !== -1;
+
 module.exports = function(app) {
-	return updateMainApp(app)
+	var p = updateMainApp(app)
 	.then(app => updateHelperApp(path.resolve(app.dir, 'Contents/Frameworks/Electron Helper.app'), app))
 	.then(app => updateHelperApp(path.resolve(app.dir, 'Contents/Frameworks/Electron Helper EH.app'), app))
 	.then(app => updateHelperApp(path.resolve(app.dir, 'Contents/Frameworks/Electron Helper NP.app'), app))
 	.then(copyIcon)
-	.then(codesign)
-	.then(pack)
-	.then(autoUpdate);
+
+	if (!devMode) {
+		p = p.then(codesign)
+		.then(pack)
+		.then(autoUpdate);
+	}
+
+	return p;
 }
 
 function updateMainApp(app) {
