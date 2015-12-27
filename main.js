@@ -23,7 +23,7 @@ const startAutoupdateTimeout = 20 * 1000;  // when to start auto-update polling
 require('electron-debug')();
 var appModel = new Model();
 var app = menubar({
-	width: 380,
+	width: 400,
 	height: 360,
 	resizable: false,
 	'always-on-top': process.argv.indexOf('--on-top') !== -1,
