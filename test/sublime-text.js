@@ -129,7 +129,7 @@ describe('Sublime Text', () => {
 			.then(result => {
 				assert(result);
 				assert.equal(path.basename(result), 'LiveStyle');
-				assert(read(out('Livestyle/livestyle.py')));
+				assert(read(out('Livestyle/livestyle-plugin.py')));
 				assert.equal(readJSON(out('Livestyle/autoupdate.json')).sha, readJSON('sublime-text/commit.json').sha);
 				done();
 			})
@@ -147,7 +147,7 @@ describe('Sublime Text', () => {
 			.then(result => {
 				assert(result);
 				assert.equal(path.basename(result), 'LiveStyle');
-				assert(read(out('Livestyle/livestyle.py')));
+				assert(read(out('Livestyle/livestyle-plugin.py')));
 				assert.throws(() => read(out('Livestyle/autoupdate.json')), /ENOENT/);
 				done();
 			})
