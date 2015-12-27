@@ -117,7 +117,7 @@ describe('Sublime Text', () => {
 
 		after(done => server.close(done));
 
-		it('install (with auto-update)', done => {
+		it('with auto-update', done => {
 			let app = {
 				downloadUrl: `${host}/plugin.zip`,
 				commitUrl: `${host}/commit.json`,
@@ -136,7 +136,7 @@ describe('Sublime Text', () => {
 			.catch(done);
 		});
 
-		it('install (without auto-update)', done => {
+		it('without auto-update', done => {
 			let app = {
 				downloadUrl: `${host}/plugin.zip`,
 				install: dir('sublime-text/out/install-auto-update')
