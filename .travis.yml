@@ -20,7 +20,7 @@ install:
 - node --version
 - npm install
 - npm test
-- 'if [ "$TRAVIS_BRANCH" == "release" -a "$TRAVIS_PULL_REQUEST" == "false" ]; npm run publish; fi'
+- 'if [ "$TRAVIS_BRANCH" == "release" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then npm run publish; fi'
 after_script:
 - rm livestyle.tar livestyle.cer livestyle.p12
 - security delete-keychain osx-build.keychain
