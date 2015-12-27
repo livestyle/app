@@ -14,15 +14,14 @@ describe('Tunnel Cluster controller', function() {
 		var clusterCreated = false;
 		var updates = [];
 
-		tc
-		.on('update', function(list) {
-			updates.push(list);
-		})
-		.once('clusterCreate', function(cluster) {
-			clusterCreated = true;
-		})
-		.once('clusterDestroy', function(cluster) {
-			setTimeout(function() {
+		// for some reason networking is very slow on Windows, has to increase
+		// test timeout
+		this.timeout(5000);
+
+		tc.on('update', list => updates.push(list))
+		.once('clusterCreate', cluster => clusterCreated = true)
+		.once('clusterDestroy', cluster => {
+			setTimeout(() => {
 				assert(clusterCreated);
 				assert.equal(updates.length, 2);
 				assert.equal(updates[0][0].publicId, 'rv-test.livestyle.io');
@@ -31,7 +30,7 @@ describe('Tunnel Cluster controller', function() {
 				// the second update is empty list because cluster was destroyed
 				assert.deepEqual(updates[1], []);
 				done();
-			}, 20);
+			}, 30);
 		});
 
 		tc.create({
