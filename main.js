@@ -27,7 +27,7 @@ var app = menubar({
 	height: 360,
 	resizable: false,
 	'always-on-top': process.argv.indexOf('--on-top') !== -1,
-	icon: path.resolve(__dirname, `assets/${process.platform === 'win32' ? 'menu-icon.ico' : 'menu-icon.png'}`)
+	icon: path.resolve(__dirname, `assets/${process.platform === 'win32' ? 'menu-icon.ico' : 'menu-iconTemplate.png'}`)
 })
 .on('ready', function() {
 	connect(pkg.config.websocketUrl, (err, client) => {
