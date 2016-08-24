@@ -1,5 +1,5 @@
 /**
- * A Node.JS back-end for Remote View feature of LiveStyle app: 
+ * A Node.JS back-end for Remote View feature of LiveStyle app:
  * manages connections to LiveStyle and Remote View servers and
  * responds to RV messages.
  *
@@ -8,10 +8,12 @@
  */
 'use strict';
 
-var debug = require('debug')('lsapp:backend');
-var extend = require('xtend');
-var tunnelController = require('./lib/controller/tunnel');
-var fileServerController = require('./lib/controller/file-server');
+const debug = require('debug')('lsapp:backend');
+const TunnelController = require('./lib/controller/tunnel');
+const fileServerController = require('./lib/controller/file-server');
+const pkg = require('./package.json');
+
+const tunnels = new TunnelController(pkg.config);
 
 module.exports = function(client) {
 	client
@@ -25,12 +27,12 @@ module.exports = function(client) {
 		client.send('rv-session', sessionPayload(origin));
 	})
 	.on('rv-get-session-list', function() {
-		var sessions = tunnelController.list()
+		var sessions = tunnels.list()
 		.map(function(session) {
 			// if this is a local server, rewrite its localSite to server docroot
 			var localServer = fileServerController.find(session.localSite);
 			if (localServer) {
-				session = extend(session, {localSite: localServer.rv.docroot});
+				session = Object.assign({}, session, {localSite: localServer.rv.docroot});
 			}
 			return session;
 		});
@@ -53,13 +55,13 @@ module.exports = function(client) {
 			client.send('rv-session', sessionPayload(data.localSite));
 			this.removeListener('destroy', onDestroy);
 		};
-		
+
 		var onDestroy = function(err) {
 			err && onError(err);
 			this.removeListener('connect', onConnect);
 		};
 
-		tunnelController.create(data)
+		tunnels.create(data)
 		.once('connect', onConnect)
 		.once('destroy', onDestroy);
 	})
@@ -93,12 +95,12 @@ module.exports.closeRvSession = function(key) {
 	var session = sessionPayload(key);
 	if (session && !session.error) {
 		debug('closing %s', session.publicId);
-		tunnelController.close(session.publicId);
+		tunnels.close(session.publicId);
 	}
 };
 
 function findSession(key) {
-	for (let session of tunnelController.list()) {
+	for (let session of tunnels.list()) {
 		if (session.localSite === key || session.publicId === key) {
 			return session;
 		}
@@ -113,7 +115,7 @@ function sessionPayload(localSite) {
 		if (localServer) {
 			session = findSession(localServer.rv.address);
 			if (session) {
-				session = extend(session, {localSite})
+				session = Object.assign({}, session, {localSite})
 			}
 		}
 	}

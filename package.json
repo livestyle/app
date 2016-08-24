@@ -52,6 +52,7 @@
     "yazl": "^2.4.1"
   },
   "config": {
-    "websocketUrl": "ws://127.0.0.1:54000/livestyle"
+    "websocketUrl": "ws://127.0.0.1:54000/livestyle",
+    "remoteSessionUrl": "http://livestyle.io:9000/connect/"
   }
 }

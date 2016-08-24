@@ -9,7 +9,7 @@ var fileServer = require('../lib/controller/file-server');
 // No need to check full Remote View connectivity,
 // simply check that controller is properly instantiated and emits messages
 
-describe('Tunnel Cluster controller', function() {
+describe.skip('Tunnel Cluster controller', function() {
 	it('create and emit messages', function(done) {
 		var clusterCreated = false;
 		var updates = [];
