@@ -3,14 +3,14 @@
  */
 'use strict';
 
-var ipc = require('electron').ipcRenderer;
-var shell = require('electron').shell;
-var chrome = require('./chrome');
-var sublimeText = require('./sublime-text');
-var rv = require('./rv-sessions');
-var $ = require('./utils').qs;
-var closest = require('./utils').closest;
-var apps = require('../lib/apps');
+const ipc = require('electron').ipcRenderer;
+const shell = require('electron').shell;
+const chrome = require('./chrome');
+const sublimeText = require('./sublime-text');
+const rv = require('./rv-sessions');
+const $ = require('./utils').qs;
+const closest = require('./utils').closest;
+const apps = require('../lib/apps');
 
 function init() {
 	var chromeRender = chrome($('.extension-item[data-extension-id=chrome]'));

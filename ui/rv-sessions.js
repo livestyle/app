@@ -3,9 +3,9 @@
  */
 'use strict';
 
-var ipc = require('electron').ipcRenderer;
-var $ = require('./utils').qs;
-var closest = require('./utils').closest;
+const ipc = require('electron').ipcRenderer;
+const $ = require('./utils').qs;
+const closest = require('./utils').closest;
 
 module.exports = function(elem) {
 	elem.addEventListener('click', function(evt) {
