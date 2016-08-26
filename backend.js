@@ -17,6 +17,12 @@ const tunnels = new TunnelController(pkg.config);
 const forwardMessages = new Set(['incoming-updates', 'diff']);
 
 module.exports = function(client) {
+	let sendSessionList = () => client.send('rv-session-list', tunnels.list());
+
+	tunnel
+	.on('clusterDestroy', sendSessionList)
+	.on('clusterCreate', sendSessionList);
+
 	client
 	.on('rv-ping', function() {
 		debug('ping');
@@ -27,7 +33,7 @@ module.exports = function(client) {
 		debug('get session for %s', origin);
 		client.send('rv-session', sessionPayload(origin));
 	})
-	.on('rv-get-session-list', () => client.send('rv-session-list', tunnels.list()))
+	.on('rv-get-session-list', sendSessionList)
 	.on('rv-create-session', data => {
 		data = upgradePayload(data);
 		debug('create session %o', data);
@@ -69,6 +75,7 @@ module.exports = function(client) {
 	});
 
 	setupMessageForwarding(client);
+	sendSessionList();
 
 	return client;
 };
