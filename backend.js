@@ -17,9 +17,9 @@ const tunnels = new TunnelController(pkg.config);
 const forwardMessages = new Set(['incoming-updates', 'diff']);
 
 module.exports = function(client) {
-	let sendSessionList = () => client.send('rv-session-list', tunnels.list());
+	let sendSessionList = () => client.send('rv-session-list', tunnels.list().map(upgradeSession));
 
-	tunnel
+	tunnels
 	.on('clusterDestroy', sendSessionList)
 	.on('clusterCreate', sendSessionList);
 
@@ -38,7 +38,7 @@ module.exports = function(client) {
 		data = upgradePayload(data);
 		debug('create session %o', data);
 
-		tunnel.connect(data)
+		tunnels.connect(data)
 		.then(cluster => {
 			debug('created connection for %s', data.origin);
 			client.send('rv-session', sessionPayload(data.origin));
@@ -89,6 +89,8 @@ const closeRvSession = module.exports.closeRvSession = function(key) {
 	}
 };
 
+module.exports.tunnels = tunnels;
+
 function upgradePayload(data) {
 	if (data.localSite && !data.origin) { // v1.0
 		data = Object.assign({}, data, {origin: data.localSite});
@@ -106,11 +108,19 @@ function findSession(key) {
 
 function sessionPayload(origin) {
 	var session = findSession(origin);
-	return session || {
+	if (session && session.state !== 'destroyed') {
+		return upgradeSession(session);
+	}
+
+	return {
 		origin,
 		localSite: origin,
 		error: 'Session not found'
 	};
+}
+
+function upgradeSession(session) {
+	return Object.assign({}, session, {state: 'connected'});
 }
 
 /**
