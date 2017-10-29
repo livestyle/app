@@ -36,12 +36,13 @@ var app = menubar({
 		}
 
 		info('Client connected');
-		
+
 		// supress 'error' event since in Node.js, in most cases it means unhandled exception
 		client.on('error', err => console.error(err));
 
-		var controller = appModelController(appModel, client);
+		const controller = appModelController(appModel, client);
 		backend(client);
+		backend.tunnels.on('update', sessions => appModel.set('rvSessions', sessions))
 		updateMainWindow(appModel);
 		setupAppEvents(app, controller);
 		initialWindowDisplay(app);
@@ -94,7 +95,7 @@ function updateMainWindow(model) {
  * Initial window display when app starts: do not quit app when window requested
  * it for the first time
  * @param  {App} app
- * @param  {BrowserWindow} wnd 
+ * @param  {BrowserWindow} wnd
  */
 function initialWindowDisplay(menuApp) {
 	var handled = false;

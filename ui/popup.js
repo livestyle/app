@@ -2,9 +2,9 @@
  * Popup controller
  */
 'use strict';
-var $ = require('./utils').qs;
-var $$ = require('./utils').qsa;
-var closest = require('./utils').closest;
+const $ = require('./utils').qs;
+const $$ = require('./utils').qsa;
+const closest = require('./utils').closest;
 
 module.exports = function() {
 	document.addEventListener('click', function(evt) {
@@ -19,7 +19,7 @@ module.exports = function() {
 		}
 
 		if (!closest(evt.target, '.popup-content') || closest(evt.target, '.popup-close')) {
-			// clicked outside popup content or on popup close icon: 
+			// clicked outside popup content or on popup close icon:
 			// hide all popups
 			return hideAll();
 		}

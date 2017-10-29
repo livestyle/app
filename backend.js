@@ -1,5 +1,5 @@
 /**
- * A Node.JS back-end for Remote View feature of LiveStyle app: 
+ * A Node.JS back-end for Remote View feature of LiveStyle app:
  * manages connections to LiveStyle and Remote View servers and
  * responds to RV messages.
  *
@@ -8,74 +8,65 @@
  */
 'use strict';
 
-var debug = require('debug')('lsapp:backend');
-var extend = require('xtend');
-var tunnelController = require('./lib/controller/tunnel');
-var fileServerController = require('./lib/controller/file-server');
+const debug = require('debug')('lsapp:backend');
+const TunnelController = require('./lib/controller/tunnel');
+const fileServer = require('./lib/file-server');
+const pkg = require('./package.json');
+
+const tunnels = new TunnelController(pkg.config);
+const forwardMessages = new Set(['incoming-updates', 'diff']);
 
 module.exports = function(client) {
+	let sendSessionList = () => client.send('rv-session-list', tunnels.list().map(upgradeSession));
+
+	tunnels
+	.on('clusterDestroy', sendSessionList)
+	.on('clusterCreate', sendSessionList);
+
 	client
 	.on('rv-ping', function() {
 		debug('ping');
 		client.send('rv-pong');
 	})
-	.on('rv-get-session', function(data) {
-		var origin = data && data.localSite;
+	.on('rv-get-session', data => {
+		var origin = data && (data.origin || data.localSite);
 		debug('get session for %s', origin);
 		client.send('rv-session', sessionPayload(origin));
 	})
-	.on('rv-get-session-list', function() {
-		var sessions = tunnelController.list()
-		.map(function(session) {
-			// if this is a local server, rewrite its localSite to server docroot
-			var localServer = fileServerController.find(session.localSite);
-			if (localServer) {
-				session = extend(session, {localSite: localServer.rv.docroot});
-			}
-			return session;
-		});
-		client.send('rv-session-list', sessions);
-	})
-	.on('rv-create-session', function(data) {
+	.on('rv-get-session-list', sendSessionList)
+	.on('rv-create-session', data => {
+		data = upgradePayload(data);
 		debug('create session %o', data);
 
-		var onError = function(err) {
-			debug('error when creating session for %s: %s', data.localSite, err ? err.message : 'unknown');
+		tunnels.connect(data)
+		.then(cluster => {
+			debug('created connection for %s', data.origin);
+			client.send('rv-session', sessionPayload(data.origin));
+		})
+		.catch(err => {
+			debug('error when creating session for %s: %s', data.origin, err ? err.message : 'unknown');
 			var message = err ? err.message : 'Unable to establish tunnel with Remote View server';
 			client.send('rv-session', {
-				localSite: data.localSite,
+				origin: data.origin,
 				error: message + '. Please try again later.'
 			});
-		};
-
-		var onConnect = function() {
-			debug('created session for %s', data.localSite);
-			client.send('rv-session', sessionPayload(data.localSite));
-			this.removeListener('destroy', onDestroy);
-		};
-		
-		var onDestroy = function(err) {
-			err && onError(err);
-			this.removeListener('connect', onConnect);
-		};
-
-		tunnelController.create(data)
-		.once('connect', onConnect)
-		.once('destroy', onDestroy);
+		});
 	})
-	.on('rv-close-session', function(data) {
+	.on('rv-close-session', data => {
+		data = upgradePayload(data);
 		debug('close session %o', data);
-		module.exports.closeRvSession(data.localSite);
+		closeRvSession(data.origin);
 	})
 	.on('rv-create-http-server', function(data) {
-		fileServerController(data.docroot)
-		.then(function(origin) {
+		debug('Explicit HTTP server creation is deprecated, use "rv-create-session" directly with file:// origin');
+		fileServer(data.docroot)
+		.then(server => {
 			client.send('rv-http-server', {
 				docroot: data.docroot,
-				origin
+				origin: server.host
 			});
 		})
-		.catch(function(err) {
+		.catch(err => {
 			client.send('rv-http-server', {
 				docroot: data.docroot,
 				error: err.message
@@ -83,45 +74,93 @@ module.exports = function(client) {
 		});
 	});
 
-	fileServerController.forward(client);
+	setupMessageForwarding(client);
+	sendSessionList();
 
 	return client;
 };
 
-module.exports.closeRvSession = function(key) {
+const closeRvSession = module.exports.closeRvSession = function(key) {
 	debug('requested session %o close', key);
 	var session = sessionPayload(key);
 	if (session && !session.error) {
 		debug('closing %s', session.publicId);
-		tunnelController.close(session.publicId);
+		tunnels.close(session.publicId);
 	}
 };
 
+module.exports.tunnels = tunnels;
+
+function upgradePayload(data) {
+	if (data.localSite && !data.origin) { // v1.0
+		data = Object.assign({}, data, {origin: data.localSite});
+	}
+	return data;
+}
+
 function findSession(key) {
-	for (let session of tunnelController.list()) {
-		if (session.localSite === key || session.publicId === key) {
+	for (let session of tunnels.list()) {
+		if (session.origin === key || session.localSite === key || session.publicId === key) {
 			return session;
 		}
 	}
 }
 
-function sessionPayload(localSite) {
-	var session = findSession(localSite);
-	if (!session) {
-		// mayabe its a local web-server?
-		var localServer = fileServerController.find(localSite);
-		if (localServer) {
-			session = findSession(localServer.rv.address);
-			if (session) {
-				session = extend(session, {localSite})
-			}
-		}
+function sessionPayload(origin) {
+	var session = findSession(origin);
+	if (session && session.state !== 'destroyed') {
+		return upgradeSession(session);
 	}
 
-	return session || {
-		localSite,
+	return {
+		origin,
+		localSite: origin,
 		error: 'Session not found'
 	};
+}
+
+function upgradeSession(session) {
+	return Object.assign({}, session, {state: 'connected'});
+}
+
+/**
+ * Setup LiveStyle message forwarding from pages with `file://` origin to their
+ * temporary file servers created for Remote View sessions
+ * @param  {LiveStyleClient}
+ */
+function setupMessageForwarding(client) {
+	let onMessage = function(payload) {
+		if (typeof payload === 'string') {
+			payload = JSON.parse(payload);
+		}
+
+		if (!payload || !payload.data || !forwardMessages.has(payload.name)) {
+			return debug('skip message forward: unsupported message "%s"', payload.name);
+		}
+
+		// is this a filesystem?
+		if (!/^file:/.test(payload.data.uri)) {
+			return debug('skip message forward: "%s" is not a file origin', payload.data.uri);
+		}
+
+		let file = fileServer.normalizePath(payload.data.uri);
+		let servers = fileServer.list(file);
+		if (!servers.length) {
+			return debug('skip message forward: no matching servers for "%s" uri', payload.data.uri);
+		}
+
+		servers.forEach(server => {
+			// rebuild URL and forward message
+			let relative = file.slice(server.docroot.length).replace(/[\\\/]/g, '/');
+			let uri = server.host + '/' + relative;
+
+			debug('forward message to %s', uri);
+			client.send(payload.name, Object.assign({}, payload.data, {uri}));
+		});
+	};
+
+	client.on('message', onMessage);
+	return () => client.removeListener('message', onMessage);
 }
 
 if (require.main === module) {

@@ -7,7 +7,6 @@
  */
 'use strict';
 
-const extend = require('xtend');
 const pluginStatus = require('./plugin-status');
 
 module.exports = function(model) {
@@ -21,7 +20,7 @@ module.exports = function(model) {
 		if (errState.value.errorCode === 'ENOSUBLIMETEXT' && st2.state !== st3.state) {
 			let result = errState === st2 ? st3 : st2;
 			if (result.state === 'not-installed') {
-				result = extend(result, {missing: [result === st2 ? 'st2' : 'st3']});
+				result = Object.assign({}, result, {missing: [result === st2 ? 'st2' : 'st3']});
 			}
 			return result;
 		}
@@ -32,7 +31,7 @@ module.exports = function(model) {
 	if (is('not-installed')) {
 		// both plugins are not installed
 		if (st2.state === st3.state) {
-			return extend(st2, {missing: ['st2', 'st3']});
+			return Object.assign({}, st2, {missing: ['st2', 'st3']});
 		}
 
 		// one of the plugins is not installed
